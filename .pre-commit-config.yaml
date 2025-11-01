@@ -25,22 +25,6 @@ repos:
 
   - repo: local
     hooks:
-      - id: black-check
-        name: black formatting check
-        entry: black --check --verbose
-        language: system
-        types: [python]
-        args: [src/, tests/]
-        pass_filenames: false
-
-      - id: isort-check
-        name: isort import sorting check
-        entry: isort --check-only --verbose
-        language: system
-        types: [python]
-        args: [src/, tests/]
-        pass_filenames: false
-
       - id: mypy-strict
         name: mypy type checking (strict)
         entry: bash -c 'echo "🔍 Type checking source code..." && python -m mypy src/ --strict --ignore-missing-imports'

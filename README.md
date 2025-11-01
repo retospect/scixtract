@@ -50,11 +50,11 @@ ollama serve
 For scientific PDFs:
 
 ```bash
-# Recommended: Balance of speed and accuracy (19GB)
-ollama pull qwen2.5:32b-instruct-q4_K_M
+# Default: Good balance for most users (4.4GB)
+ollama pull qwen2.5:7b
 
-# Alternative: Smaller model (2GB)
-ollama pull llama3.2
+# Alternative: Larger, more accurate model (19GB)
+ollama pull qwen2.5:32b-instruct-q4_K_M
 ```
 
 ## Installation
@@ -74,7 +74,7 @@ pip install scixtract
 scixtract extract paper.pdf
 
 # Use specific model
-scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
+scixtract extract paper.pdf --model qwen2.5:7b
 
 # Process multiple PDFs
 scixtract extract papers/*.pdf
@@ -88,7 +88,7 @@ from pathlib import Path
 
 # Initialize processor
 processor = AdvancedPDFProcessor(
-    model="qwen2.5:32b-instruct-q4_K_M"
+    model="qwen2.5:7b"
 )
 
 # Process PDF
@@ -130,15 +130,15 @@ Scixtract provides multiple output formats:
 
 Based on testing with scientific papers:
 
-**Recommended: qwen2.5:32b-instruct-q4_K_M**
-- Good accuracy for scientific content
+**Default: qwen2.5:7b**
+- Good balance of performance and size
 - Reliable JSON output
-- Size: 19GB
+- Size: 4.4GB
 
-**Lightweight option: llama3.2**
-- Adequate performance for most papers
-- Faster processing
-- Size: 2GB
+**High-performance option: qwen2.5:32b-instruct-q4_K_M**
+- Better accuracy for complex scientific content
+- Larger model with more capabilities
+- Size: 19GB
 
 ## System requirements
 
@@ -158,8 +158,8 @@ scixtract-setup-ollama --check-only
 # List available models
 scixtract-setup-ollama --list-models
 
-# Complete setup with recommended model
-scixtract-setup-ollama --model qwen2.5:32b-instruct-q4_K_M
+# Complete setup with default model
+scixtract-setup-ollama --model qwen2.5:7b
 ```
 
 ## License

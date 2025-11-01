@@ -3,7 +3,7 @@
 
 # Ollama AI settings
 ollama_base_url = "http://localhost:11434"
-ollama_model = "qwen2.5:32b-instruct-q4_K_M"
+ollama_model = "qwen2.5:7b"
 ollama_timeout = 120
 ollama_temperature = 0.1
 ollama_top_p = 0.9

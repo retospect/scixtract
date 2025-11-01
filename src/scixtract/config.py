@@ -20,7 +20,7 @@ class Config:
     """Scixtract configuration."""
     # Ollama settings
     ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "llama3.2"
+    ollama_model: str = "qwen2.5:7b"
     ollama_timeout: int = 120
     ollama_temperature: float = 0.1
     ollama_top_p: float = 0.9

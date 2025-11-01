@@ -152,7 +152,7 @@ class TestGenerateMarkdown:
     def test_generate_markdown_with_references(self):
         """Test markdown generation with references section."""
         metadata = DocumentMetadata(cite_key="test2024", title="Test Paper")
-        pages = []
+        pages: list[PageContent] = []
         result = ExtractionResult(
             metadata=metadata,
             pages=pages,

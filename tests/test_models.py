@@ -119,7 +119,7 @@ class TestExtractionResult:
         """Test initialization."""
         metadata = DocumentMetadata(cite_key="test2024")
         pages = [PageContent(page_num=1, raw_text="Test")]
-        sections = {"abstract": []}
+        sections: dict[str, list[str]] = {"abstract": []}
         keywords = ["test", "keyword"]
         concepts = ["concept1"]
 

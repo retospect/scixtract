@@ -59,10 +59,22 @@ ollama pull qwen2.5:32b-instruct-q4_K_M
 
 ## Installation
 
+### For Users (Production)
+
 Install scixtract from PyPI:
 
 ```bash
 pip install scixtract
+```
+
+### For Development
+
+Install with development dependencies:
+
+```bash
+git clone https://github.com/retospect/scixtract.git
+cd scixtract
+pip install -e ".[dev]"
 ```
 
 ## Quick Start

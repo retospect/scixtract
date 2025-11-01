@@ -6,7 +6,7 @@ import os
 import sys
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Any, Optional
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -126,7 +126,7 @@ class ConfigManager:
         )
         print(f"🧠 Database: {c.knowledge.db_path or 'default'}")
 
-    def _update_from_dict(self, data: dict) -> None:
+    def _update_from_dict(self, data: dict[str, Any]) -> None:
         """Update config from dictionary data."""
         if "ollama" in data:
             ollama_data = data["ollama"]
@@ -155,16 +155,16 @@ class ConfigManager:
         model = os.getenv("SCIXTRACT_OLLAMA_MODEL")
         if model:
             self.config.ollama.model = model
-        if os.getenv("SCIXTRACT_OLLAMA_TIMEOUT"):
+        timeout_str = os.getenv("SCIXTRACT_OLLAMA_TIMEOUT")
+        if timeout_str:
             try:
-                self.config.ollama.timeout = int(os.getenv("SCIXTRACT_OLLAMA_TIMEOUT"))
+                self.config.ollama.timeout = int(timeout_str)
             except ValueError:
                 pass
-        if os.getenv("SCIXTRACT_OLLAMA_TEMPERATURE"):
+        temperature_str = os.getenv("SCIXTRACT_OLLAMA_TEMPERATURE")
+        if temperature_str:
             try:
-                self.config.ollama.temperature = float(
-                    os.getenv("SCIXTRACT_OLLAMA_TEMPERATURE")
-                )
+                self.config.ollama.temperature = float(temperature_str)
             except ValueError:
                 pass
 

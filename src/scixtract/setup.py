@@ -128,10 +128,11 @@ class OllamaSetup:
             )
 
             print("   Progress:")
-            while True:
-                output = process.stdout.readline()
-                if output == "" and process.poll() is not None:
-                    break
+            if process.stdout:
+                while True:
+                    output = process.stdout.readline()
+                    if output == "" and process.poll() is not None:
+                        break
                 if output:
                     # Clean up progress output
                     line = output.strip()
@@ -236,7 +237,9 @@ Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
             print(f"\n{status} {model_name}")
             print(f"   Size: {info['size']}")
             print(f"   Description: {info['description']}")
-            print(f"   Strengths: {', '.join(info['strengths'])}")
+            strengths = info.get('strengths', [])
+            if isinstance(strengths, list):
+                print(f"   Strengths: {', '.join(strengths)}")
 
     def setup_complete_system(self, model_name: Optional[str] = None) -> bool:
         """Complete setup process."""

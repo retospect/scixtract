@@ -94,7 +94,8 @@ class OllamaAIProcessor:
 
             if response.status_code == 200:
                 result = response.json()
-                return result.get("response", "").strip()
+                response_text = result.get("response", "")
+                return str(response_text).strip() if response_text else ""
             else:
                 return ""
 
@@ -116,7 +117,7 @@ class OllamaAIProcessor:
 Text to analyze:
 {text[:4000]}
 
-Return your analysis in this exact JSON format:
+Return ONLY a JSON object with this exact structure:
 {{
     "technical_keywords": ["keyword1", "keyword2"],
     "research_concepts": ["concept1", "concept2"],
@@ -125,12 +126,15 @@ Return your analysis in this exact JSON format:
     "equipment": ["instrument1", "instrument2"]
 }}
 
-Be precise and extract only the most important terms. Focus on NOx, ammonia, catalysis, electrochemistry if present."""
+Be precise and avoid duplicates. Focus on the most important and specific terms."""
 
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
 
         try:
-            return json.loads(response)
+            result = json.loads(response)
+            if isinstance(result, dict):
+                return result
+            return {"keywords": [], "concepts": []}
         except json.JSONDecodeError:
             return {
                 "technical_keywords": [],

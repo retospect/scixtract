@@ -10,7 +10,7 @@ from collections import Counter, defaultdict
 from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 from .models import ConceptNetwork, DocumentIndex, PageIndex
 
@@ -106,7 +106,7 @@ class KnowledgeTracker:
         conn.commit()
         conn.close()
 
-    def add_extraction_result(self, result_data: Dict, file_path: str) -> None:
+    def add_extraction_result(self, result_data: Dict[str, Any], file_path: str) -> None:
         """Add extraction result to knowledge database."""
         metadata = result_data.get("metadata", {})
         pages = result_data.get("pages", [])
@@ -259,7 +259,7 @@ class KnowledgeTracker:
         conn.commit()
         conn.close()
 
-    def search_keywords(self, query: str, limit: int = 20) -> List[Dict]:
+    def search_keywords(self, query: str, limit: int = 20) -> List[Dict[str, Any]]:
         """Search for keywords and return matching documents."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
@@ -296,7 +296,7 @@ class KnowledgeTracker:
         conn.close()
         return results
 
-    def get_document_stats(self) -> Dict:
+    def get_document_stats(self) -> Dict[str, Any]:
         """Get comprehensive statistics about the knowledge base."""
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()

@@ -7,12 +7,17 @@ import re
 import json
 import requests
 import time
+import warnings
 from pathlib import Path
 from typing import List, Dict, Tuple, Optional, Any
 from datetime import datetime
 
 try:
-    import fitz  # PyMuPDF
+    # Suppress PyMuPDF/SWIG deprecation warnings during import
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=DeprecationWarning, module="importlib._bootstrap")
+        warnings.filterwarnings("ignore", message="builtin type.*has no __module__ attribute")
+        import fitz  # PyMuPDF
     HAS_PYMUPDF = True
 except ImportError:
     HAS_PYMUPDF = False

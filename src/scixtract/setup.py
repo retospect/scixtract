@@ -158,7 +158,7 @@ class OllamaSetup:
         print(f"🧪 Testing model: {model_name}")
 
         test_prompt = """Extract keywords from this text: "Catalytic conversion of nitrogen oxides to ammonia using electrochemical methods."
-        
+
 Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
 
         try:

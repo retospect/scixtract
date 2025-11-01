@@ -37,7 +37,9 @@ def parse_makefile_args(args_list: List[str]) -> Tuple[Dict[str, Any], List[str]
     return makefile_args, remaining_args
 
 
-def save_results(result: ExtractionResult, output_dir: Path, pdf_path: Path) -> Dict[str, str]:
+def save_results(
+    result: ExtractionResult, output_dir: Path, pdf_path: Path
+) -> Dict[str, str]:
     """Save extraction results in multiple formats."""
     base_name = pdf_path.stem
     saved_files = {}
@@ -347,16 +349,16 @@ def main() -> None:
         epilog="""Examples:
   # Extract PDF with AI processing
   scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
-  
+
   # Extract with bibliography integration (Makefile-friendly)
   scixtract extract paper.pdf BIB_FILE=references.bib UPDATE_KNOWLEDGE=true
-  
+
   # Using environment variables (Makefile-friendly)
   OLLAMA_MODEL=qwen2.5:32b-instruct-q4_K_M scixtract extract paper.pdf
-  
+
   # Search knowledge base
   scixtract knowledge --search "catalysis"
-  
+
   # Configuration management
   scixtract config --create-example json
   scixtract config --show

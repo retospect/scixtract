@@ -117,8 +117,8 @@ class KnowledgeTracker:
         # Insert/update document
         cursor.execute(
             """
-            INSERT OR REPLACE INTO documents 
-            (cite_key, title, authors, year, keywords, key_concepts, page_count, 
+            INSERT OR REPLACE INTO documents
+            (cite_key, title, authors, year, keywords, key_concepts, page_count,
              extraction_date, file_path, processing_time)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
@@ -146,8 +146,8 @@ class KnowledgeTracker:
         for page_data in pages:
             cursor.execute(
                 """
-                INSERT INTO pages 
-                (cite_key, page_num, content_type, keywords, word_count, 
+                INSERT INTO pages
+                (cite_key, page_num, content_type, keywords, word_count,
                  has_figures, has_tables, has_equations)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -178,7 +178,7 @@ class KnowledgeTracker:
 
                 cursor.execute(
                     """
-                    INSERT INTO keywords 
+                    INSERT INTO keywords
                     (keyword, cite_key, page_num, frequency, context)
                     VALUES (?, ?, ?, ?, ?)
                 """,
@@ -233,7 +233,7 @@ class KnowledgeTracker:
         cursor.execute(
             """
             SELECT keyword, COUNT(*) as frequency
-            FROM keywords 
+            FROM keywords
             WHERE cite_key = ?
             GROUP BY keyword
             ORDER BY frequency DESC
@@ -249,7 +249,7 @@ class KnowledgeTracker:
             for kw2 in keywords[i + 1 :]:
                 cursor.execute(
                     """
-                    INSERT INTO concept_network 
+                    INSERT INTO concept_network
                     (concept, related_concept, cite_key, co_occurrence_count)
                     VALUES (?, ?, ?, ?)
                 """,

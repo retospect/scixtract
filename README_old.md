@@ -11,148 +11,171 @@ Scixtract solves the problem that PDF text extraction is messy and full of artif
 
 Designed specifically for academic and scientific literature, scixtract provides clean, structured text output that maintains the integrity of your research content.
 
-## What scixtract does
+## 🎯 Why scixtract?
 
-- **Cleans messy PDF text**: Removes spacing artifacts, broken words, and formatting issues
-- **Preserves scientific content**: Maintains chemical formulas (H₂O, CO₂), equations, and citations
-- **Local AI processing**: Uses local AI models to fix text while preserving meaning
-- **Privacy-focused**: All processing happens on your machine - no data sent to external services
-- **Batch processing**: Handle multiple PDFs
-- **Knowledge indexing**: Build searchable databases of extracted content
+- **🤖 AI-First Approach**: Leverages local Ollama models for privacy-preserving extraction
+- **🔬 Science-Optimized**: Preserves chemical formulas, equations, and academic formatting
+- **📊 Knowledge Graphs**: Builds searchable networks of concepts and relationships
+- **⚡ High Performance**: Batch processing with 95%+ test coverage
+- **🔒 Privacy-Focused**: All processing happens locally - no data leaves your machine
 
-## Prerequisites
+## 📋 Table of Contents
 
-Before using scixtract, you need to install and set up Ollama:
+- [🎯 Why scixtract?](#-why-scixtract)
+- [⚡ Quick Start](#-quick-start)
+- [📦 Installation](#-installation)
+- [✨ Features](#-features)
+- [🛠 Usage](#-usage)
+- [📚 API Reference](#-api-reference)
+- [💡 Examples](#-examples)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
-### 1. Install Ollama
+## 📦 Installation
 
-**macOS:**
-```bash
-brew install ollama
-```
-
-**Linux:**
-```bash
-curl -fsSL https://ollama.ai/install.sh | sh
-```
-
-**Windows:**
-Download from [ollama.ai](https://ollama.ai/download)
-
-### 2. Start Ollama service
-
-```bash
-ollama serve
-```
-
-### 3. Install a model
-
-For scientific PDFs:
-
-```bash
-# Recommended: Balance of speed and accuracy (19GB)
-ollama pull qwen2.5:32b-instruct-q4_K_M
-
-# Alternative: Smaller model (2GB)
-ollama pull llama3.2
-```
-
-## Installation
-
-Install scixtract from PyPI:
+### From PyPI (recommended)
 
 ```bash
 pip install scixtract
 ```
 
-## Quick Start
-
-### Basic PDF extraction
+### From Source
 
 ```bash
-# Extract a single PDF
+git clone https://github.com/retostamm/scixtract.git
+cd scixtract
+pip install -e .
+```
+
+### Development Installation
+
+```bash
+git clone https://github.com/retostamm/scixtract.git
+cd scixtract
+pip install -e ".[dev]"
+```
+
+## ⚡ Quick Start
+
+> Get up and running in under 5 minutes!
+
+### 1. Setup Ollama (AI Engine)
+
+```bash
+# Install Ollama (macOS)
+brew install ollama
+
+# Start Ollama service
+ollama serve &
+
+# Install recommended model
+ollama pull qwen2.5:32b-instruct-q4_K_M
+
+# Or use the setup helper
+scixtract-setup-ollama
+```
+
+### 2. Extract PDF with AI
+
+```bash
+# Basic extraction
 scixtract extract paper.pdf
 
-# Use specific model
+# With specific model
 scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
 
-# Process multiple PDFs
-scixtract extract papers/*.pdf
+# With bibliography integration
+scixtract extract paper.pdf --bib-file references.bib --update-knowledge
 ```
 
-### Python API
-
-```python
-from scixtract import AdvancedPDFProcessor
-from pathlib import Path
-
-# Initialize processor
-processor = AdvancedPDFProcessor(
-    model="qwen2.5:32b-instruct-q4_K_M"
-)
-
-# Process PDF
-result = processor.process_pdf(Path("paper.pdf"))
-
-# Access cleaned text
-print(f"Title: {result.metadata.title}")
-print(f"Authors: {', '.join(result.metadata.authors)}")
-
-# Get page content
-for page in result.pages:
-    print(f"Page {page.page_number}: {page.content[:200]}...")
-```
-
-### Knowledge management
-
-Build a searchable database of your extracted content:
+### 3. Search Knowledge Base
 
 ```bash
-# Extract and add to knowledge base (with bibliography for author name recognition)
-scixtract extract paper.pdf --bib-file references.bib --update-knowledge
-
-# Search your knowledge base
+# Search for keywords
 scixtract knowledge --search "catalysis"
+
+# Find related concepts
+scixtract knowledge --related "ammonia"
 
 # View statistics
 scixtract knowledge --stats
 ```
 
-## Output formats
+## ✨ Features
 
-Scixtract provides multiple output formats:
+### 🤖 **AI-Powered Processing**
+- **Multi-pass analysis** with keyword extraction → classification → enhancement
+- **Intelligent text fixing** that preserves chemical formulas and citations
+- **Content classification** (abstract, methods, results, discussion, etc.)
+- **Advanced prompting strategies** optimized for academic papers
 
-- **JSON**: Structured data with metadata, page content, and extracted keywords
-- **Markdown**: Clean, readable text with AI-generated summaries
-- **Knowledge database**: SQLite database for searching across multiple documents
+### 📚 **Knowledge Management**
+- **SQLite database** for fast, searchable knowledge indexing
+- **Cross-document concept networks** and relationship mapping
+- **Author tracking** and citation networks
+- **Knowledge graph export** for visualization
 
-## Model recommendations
+### 🔬 **Academic Optimization**
+- **Chemical formula preservation** (NOₓ, NH₃, H₂O, etc.)
+- **Citation integrity** maintenance
+- **Bibliography integration** from BibTeX files
+- **Research context linking** between processed content and bibliography
 
-Based on testing with scientific papers:
+### 📄 **Multiple Output Formats**
+- **Structured JSON** with comprehensive metadata
+- **Enhanced Markdown** with AI-generated summaries
+- **Keyword indices** for fast searching
+- **Knowledge graphs** for visualization
 
-**Recommended: qwen2.5:32b-instruct-q4_K_M**
-- Good accuracy for scientific content
-- Reliable JSON output
-- Size: 19GB
+### 🛠 **Professional Tools**
+- **Command-line interface** for batch processing
+- **Python API** for integration
+- **Comprehensive testing** with 95%+ coverage
+- **Type hints** throughout
 
-**Lightweight option: llama3.2**
-- Adequate performance for most papers
-- Faster processing
-- Size: 2GB
+## 🛠 Usage
 
-## System requirements
+### Command Line Interface
 
-- **Python**: 3.10 or higher
-- **Memory**: 8GB RAM minimum (16GB+ recommended for large models)
-- **Storage**: 20GB+ free space for AI models
-- **Ollama**: Required for AI processing
-
-## Help and setup
-
-Use the built-in setup helper:
+#### PDF Extraction
 
 ```bash
-# Check if Ollama is properly configured
+# Basic extraction
+scixtract extract paper.pdf
+
+# Advanced options
+scixtract extract paper.pdf \
+    --model qwen2.5:32b-instruct-q4_K_M \
+    --output-dir ./extractions \
+    --bib-file references.bib \
+    --update-knowledge
+
+# Batch processing
+for pdf in papers/*.pdf; do
+    scixtract extract "$pdf" --update-knowledge
+done
+```
+
+#### Knowledge Management
+
+```bash
+# Search for concepts
+scixtract knowledge --search "electrochemical conversion"
+
+# Find related concepts
+scixtract knowledge --related "NOx reduction"
+
+# Export knowledge graph
+scixtract knowledge --export-graph knowledge_graph.json
+
+# View database statistics
+scixtract knowledge --stats
+```
+
+#### Ollama Setup
+
+```bash
+# Check Ollama status
 scixtract-setup-ollama --check-only
 
 # List available models
@@ -162,15 +185,20 @@ scixtract-setup-ollama --list-models
 scixtract-setup-ollama --model qwen2.5:32b-instruct-q4_K_M
 ```
 
-## License
+### Python API
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE) file for details.
+#### Basic Usage
 
-## Support
+```python
+from scixtract import AdvancedPDFProcessor
+from pathlib import Path
 
-For technical documentation, API reference, and development information, see [MAINTAINER_README.md](MAINTAINER_README.md).
+# Initialize processor
+processor = AdvancedPDFProcessor(
+    model="qwen2.5:32b-instruct-q4_K_M",
+    bib_file=Path("references.bib")
+)
 
-<<<<<<< HEAD
 # Process PDF
 result = processor.process_pdf(Path("paper.pdf"))
 
@@ -404,7 +432,7 @@ If you use this software in your research, please cite:
   title = {scixtract: AI-powered scientific PDF extraction using Ollama},
   year = {2024},
   url = {https://github.com/retostamm/scixtract},
-  version = {1.0.0}
+  version = {0.3.0}
 }
 ```
 
@@ -426,6 +454,3 @@ If you use this software in your research, please cite:
 ---
 
 **Made with ❤️ for the research community**
-=======
-For issues and questions, please visit the [GitHub repository](https://github.com/retospect/scixtract).
->>>>>>> b7ea440 (📝 Restructure documentation and update package metadata)

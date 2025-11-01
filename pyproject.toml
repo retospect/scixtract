@@ -5,9 +5,9 @@ build-backend = "poetry.core.masonry.api"
 [project]
 name = "scixtract"
 version = "1.0.0"
-description = "AI-powered scientific PDF extraction using Ollama"
+description = "AI-assisted scientific PDF text extraction using local Ollama models"
 readme = "README.md"
-license = {file = "LICENSE"}
+license = {text = "GPL-3.0-or-later"}
 authors = [
     {name = "Reto Stamm", email = "reto.stamm@example.com"}
 ]
@@ -17,6 +17,7 @@ maintainers = [
 keywords = ["pdf", "extraction", "ai", "ollama", "academic", "research", "knowledge", "indexing"]
 classifiers = [
     "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",

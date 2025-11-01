@@ -1,0 +1,23 @@
+{
+  "ollama": {
+    "base_url": "http://localhost:11434",
+    "default_model": "qwen2.5:32b-instruct-q4_K_M",
+    "timeout": 120,
+    "temperature": 0.1,
+    "top_p": 0.9,
+    "num_ctx": 8192
+  },
+  "extraction": {
+    "output_dir": "ai_extractions",
+    "update_knowledge": true,
+    "save_markdown": true,
+    "save_keywords": true,
+    "context_length": 200
+  },
+  "knowledge": {
+    "db_path": "knowledge_index.db",
+    "auto_update": true,
+    "max_search_results": 20,
+    "export_format": "json"
+  }
+}

@@ -17,6 +17,7 @@ name: Publish to PyPI
 
 permissions:
   id-token: write
+  contents: write  # Required for creating releases and pushing tags
 
 jobs:
   version-bump:
@@ -31,6 +32,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
+        persist-credentials: true
     
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -51,7 +53,7 @@ jobs:
         bump-my-version bump ${{ github.event.inputs.version_bump }}
         NEW_VERSION=$(bump-my-version show current_version)
         echo "new_version=v$NEW_VERSION" >> $GITHUB_OUTPUT
-        git push --follow-tags
+        git push origin main --follow-tags
 
   create-release:
     name: Create GitHub Release

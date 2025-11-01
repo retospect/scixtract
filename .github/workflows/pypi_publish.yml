@@ -71,10 +71,15 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         VERSION=${{ needs.version-bump.outputs.new_version }}
-        gh release create $VERSION \
-          --title "Release $VERSION" \
-          --notes "Automated release created by version bump workflow" \
-          --generate-notes
+        # Check if release already exists, if not create it
+        if ! gh release view $VERSION >/dev/null 2>&1; then
+          gh release create $VERSION \
+            --title "Release $VERSION" \
+            --notes "Automated release created by version bump workflow" \
+            --generate-notes
+        else
+          echo "Release $VERSION already exists, skipping creation"
+        fi
 
   build:
     name: Build distribution
@@ -99,7 +104,7 @@ jobs:
     - name: Build a binary wheel and a source tarball
       run: python3 -m build
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -118,7 +123,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -138,7 +143,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/

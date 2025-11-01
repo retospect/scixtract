@@ -2,7 +2,7 @@
 
 [![Python](https://img.shields.io/pypi/pyversions/scixtract.svg)](https://pypi.org/project/scixtract/)
 [![PyPI version](https://img.shields.io/pypi/v/scixtract.svg)](https://pypi.org/project/scixtract/)
-[![License](https://img.shields.io/pypi/l/scixtract.svg)](https://github.com/retospect/scixtract/blob/main/LICENSE)
+[![License](https://img.shields.io/pypi/l/scixtract.svg)](https://github.com/retospect/scixtract/blob/main/LICENSE.txt)
 [![Tests](https://github.com/retospect/scixtract/actions/workflows/test.yml/badge.svg)](https://github.com/retospect/scixtract/actions/workflows/test.yml)
 
 **AI-assisted scientific PDF text extraction**

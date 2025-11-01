@@ -1,25 +1,39 @@
 # scixtract
 
 [![Python](https://img.shields.io/pypi/pyversions/scixtract.svg)](https://pypi.org/project/scixtract/)
+[![PyPI version](https://img.shields.io/pypi/v/scixtract.svg)](https://pypi.org/project/scixtract/)
 [![License](https://img.shields.io/pypi/l/scixtract.svg)](https://github.com/retostamm/scixtract/blob/main/LICENSE)
 [![Tests](https://github.com/retostamm/scixtract/actions/workflows/test.yml/badge.svg)](https://github.com/retostamm/scixtract/actions/workflows/test.yml)
+[![Coverage](https://img.shields.io/codecov/c/github/retostamm/scixtract)](https://codecov.io/gh/retostamm/scixtract)
+[![Downloads](https://img.shields.io/pypi/dm/scixtract.svg)](https://pypi.org/project/scixtract/)
 
-**AI-powered scientific PDF extraction using Ollama**
+**🚀 AI-powered scientific PDF extraction using Ollama**
+
+> Transform your academic PDFs into structured, searchable knowledge with cutting-edge AI
 
 A comprehensive library for extracting text from academic PDFs using AI, with advanced knowledge tracking and search capabilities. Specifically optimized for scientific literature with features like chemical formula preservation, citation integrity, and intelligent content classification.
 
-## Table of Contents
+## 🎯 Why scixtract?
 
-- [Installation](#installation)
-- [Quick Start](#quick-start)
-- [Features](#features)
-- [Usage](#usage)
-- [API Reference](#api-reference)
-- [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
+- **🤖 AI-First Approach**: Leverages local Ollama models for privacy-preserving extraction
+- **🔬 Science-Optimized**: Preserves chemical formulas, equations, and academic formatting
+- **📊 Knowledge Graphs**: Builds searchable networks of concepts and relationships
+- **⚡ High Performance**: Batch processing with 95%+ test coverage
+- **🔒 Privacy-Focused**: All processing happens locally - no data leaves your machine
 
-## Installation
+## 📋 Table of Contents
+
+- [🎯 Why scixtract?](#-why-scixtract)
+- [⚡ Quick Start](#-quick-start)
+- [📦 Installation](#-installation)
+- [✨ Features](#-features)
+- [🛠 Usage](#-usage)
+- [📚 API Reference](#-api-reference)
+- [💡 Examples](#-examples)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
+
+## 📦 Installation
 
 ### From PyPI (recommended)
 
@@ -43,7 +57,9 @@ cd scixtract
 pip install -e ".[dev]"
 ```
 
-## Quick Start
+## ⚡ Quick Start
+
+> Get up and running in under 5 minutes!
 
 ### 1. Setup Ollama (AI Engine)
 
@@ -87,7 +103,7 @@ scixtract knowledge --related "ammonia"
 scixtract knowledge --stats
 ```
 
-## Features
+## ✨ Features
 
 ### 🤖 **AI-Powered Processing**
 - **Multi-pass analysis** with keyword extraction → classification → enhancement
@@ -119,7 +135,7 @@ scixtract knowledge --stats
 - **Comprehensive testing** with 95%+ coverage
 - **Type hints** throughout
 
-## Usage
+## 🛠 Usage
 
 ### Command Line Interface
 
@@ -238,7 +254,7 @@ fixed_text = ai.fix_text_spacing("Textwithnospaces")
 print(f"Fixed: {fixed_text}")
 ```
 
-## API Reference
+## 📚 API Reference
 
 ### Core Classes
 
@@ -293,7 +309,7 @@ Document metadata including title, authors, keywords, and processing info.
 #### `PageContent`
 Individual page content with classification and keywords.
 
-## Examples
+## 💡 Examples
 
 See the [examples/](examples/) directory for complete examples:
 
@@ -302,9 +318,11 @@ See the [examples/](examples/) directory for complete examples:
 - **[knowledge_analysis.py](examples/knowledge_analysis.py)** - Knowledge base analysis
 - **[custom_processing.py](examples/custom_processing.py)** - Advanced customization
 
-## Recommended Models
+## 🎯 Recommended Models
 
 Based on extensive testing with academic papers:
+
+> **💡 Pro Tip**: Start with `qwen2.5:32b-instruct-q4_K_M` for the best balance of accuracy and performance
 
 ### **Best Overall: qwen2.5:32b-instruct-q4_K_M**
 - ✅ **Perfect JSON output** - No parsing errors
@@ -324,9 +342,15 @@ Based on extensive testing with academic papers:
 - ❌ **Large size** - 40GB storage required
 - ❌ **Slow processing** - Higher compute requirements
 
-## Requirements
+## 📋 Requirements
 
-- **Python**: 3.10+
+### System Requirements
+- **Python**: 3.10+ (3.11+ recommended)
+- **Memory**: 8GB RAM minimum (16GB+ for large models)
+- **Storage**: 20GB+ free space for models
+- **OS**: macOS, Linux, Windows (WSL2)
+
+### Core Dependencies
 - **Ollama**: For AI processing
 - **PyMuPDF**: For PDF text extraction
 - **SQLite**: For knowledge indexing (included with Python)
@@ -337,9 +361,18 @@ Based on extensive testing with academic papers:
 - **pdfplumber**: Alternative PDF processing
 - **unstructured**: Advanced document parsing
 
-## Contributing
+## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+We welcome contributions! 🎉 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+### Quick Contribution Guide
+
+1. **🍴 Fork** the repository
+2. **🌿 Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **✅ Test** your changes: `pytest`
+4. **📝 Commit** your changes: `git commit -m 'Add amazing feature'`
+5. **🚀 Push** to branch: `git push origin feature/amazing-feature`
+6. **📬 Open** a Pull Request
 
 ### Development Setup
 
@@ -378,9 +411,18 @@ mypy src/
 bandit -r src/
 ```
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🚀 Roadmap
+
+- [ ] **Multi-language support** for international papers
+- [ ] **Web interface** for non-technical users
+- [ ] **Cloud deployment** options
+- [ ] **Advanced visualization** tools
+- [ ] **Integration** with reference managers (Zotero, Mendeley)
+- [ ] **Collaborative features** for research teams
 
 ## Citation
 
@@ -396,12 +438,20 @@ If you use this software in your research, please cite:
 }
 ```
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- Developed for NOx to Ammonia catalysis research at University of Limerick
-- Supervised by Prof. Matthias Vandichel
-- Built with [Ollama](https://ollama.ai/) for AI processing
-- Uses [PyMuPDF](https://pymupdf.readthedocs.io/) for PDF extraction
+- **🎓 Research Context**: Developed for NOx to Ammonia catalysis research at University of Limerick
+- **👨‍🏫 Supervision**: Prof. Matthias Vandichel
+- **🤖 AI Engine**: Built with [Ollama](https://ollama.ai/) for local AI processing
+- **📄 PDF Processing**: Powered by [PyMuPDF](https://pymupdf.readthedocs.io/)
+- **🌟 Community**: Thanks to all contributors and users!
+
+## 📈 Stats
+
+- **🧪 Test Coverage**: 95%+
+- **📦 Dependencies**: Minimal and well-maintained
+- **🔄 CI/CD**: Automated testing and deployment
+- **📚 Documentation**: Comprehensive guides and examples
 
 ---
 

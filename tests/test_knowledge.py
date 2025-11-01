@@ -51,7 +51,8 @@ class TestKnowledgeTracker:
 
         # Check concept_network table
         cursor.execute(
-            "SELECT name FROM sqlite_master WHERE type='table' AND name='concept_network'"
+            "SELECT name FROM sqlite_master WHERE type='table' "
+            "AND name='concept_network'"
         )
         assert cursor.fetchone() is not None
 
@@ -120,7 +121,10 @@ class TestKnowledgeTracker:
 
     def test_extract_keyword_context(self):
         """Test keyword context extraction."""
-        text = "This is a test sentence with the keyword catalysis in the middle. This is another sentence."
+        text = (
+            "This is a test sentence with the keyword catalysis in the middle. "
+            "This is another sentence."
+        )
         context = self.tracker._extract_keyword_context("catalysis", text, 50)
 
         assert "catalysis" in context
@@ -150,7 +154,9 @@ class TestKnowledgeTracker:
                     "page_num": 1,
                     "content_type": "abstract",
                     "keywords": ["catalysis", "ammonia"],
-                    "processed_text": "This paper discusses catalysis and ammonia synthesis.",
+                    "processed_text": (
+                        "This paper discusses catalysis and ammonia synthesis."
+                    ),
                     "figures": [],
                     "tables": [],
                     "equations": [],
@@ -254,7 +260,9 @@ class TestKnowledgeTracker:
                     "page_num": 1,
                     "content_type": "abstract",
                     "keywords": ["catalysis", "ammonia", "synthesis"],
-                    "processed_text": "Test content about catalysis, ammonia, and synthesis.",
+                    "processed_text": (
+                        "Test content about catalysis, ammonia, and synthesis."
+                    ),
                     "figures": [],
                     "tables": [],
                     "equations": [],

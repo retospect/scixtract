@@ -97,7 +97,8 @@ class KnowledgeTracker:
             "CREATE INDEX IF NOT EXISTS idx_keywords_cite_key ON keywords(cite_key)"
         )
         cursor.execute(
-            "CREATE INDEX IF NOT EXISTS idx_concepts_concept ON concept_network(concept)"
+            "CREATE INDEX IF NOT EXISTS idx_concepts_concept "
+            "ON concept_network(concept)"
         )
 
         conn.commit()
@@ -266,7 +267,8 @@ class KnowledgeTracker:
         # Search keywords
         cursor.execute(
             """
-            SELECT DISTINCT k.cite_key, d.title, d.authors, k.keyword, k.context, k.page_num
+            SELECT DISTINCT k.cite_key, d.title, d.authors, k.keyword,
+                   k.context, k.page_num
             FROM keywords k
             JOIN documents d ON k.cite_key = d.cite_key
             WHERE k.keyword LIKE ?
@@ -496,12 +498,12 @@ def main() -> None:
         print(f"   📝 Total keyword instances: {stats['total_keyword_instances']}")
 
         if stats["top_keywords"]:
-            print(f"\n🔥 Top Keywords:")
+            print("\n🔥 Top Keywords:")
             for keyword, freq in stats["top_keywords"][:5]:
                 print(f"   • {keyword}: {freq}")
 
         if stats["top_authors"]:
-            print(f"\n👥 Top Authors:")
+            print("\n👥 Top Authors:")
             for author, count in stats["top_authors"][:5]:
                 print(f"   • {author}: {count} papers")
 

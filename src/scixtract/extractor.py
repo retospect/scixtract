@@ -100,7 +100,11 @@ class OllamaAIProcessor:
 
     def extract_keywords_and_concepts(self, text: str) -> Dict[str, List[str]]:
         """First pass: Extract keywords and key concepts."""
-        system_prompt = """You are an expert academic researcher specializing in analyzing scientific papers. Your task is to extract keywords and key concepts from academic text with high precision."""
+        system_prompt = (
+            "You are an expert academic researcher specializing in analyzing "
+            "scientific papers. Your task is to extract keywords and key "
+            "concepts from academic text with high precision."
+        )
 
         prompt = f"""Analyze this academic text and extract:
 
@@ -142,7 +146,10 @@ Be precise and avoid duplicates. Focus on the most important and specific terms.
 
     def classify_content_type(self, text: str, page_num: int, total_pages: int) -> str:
         """Classify the type of content on a page."""
-        system_prompt = """You are an expert at analyzing academic paper structure. Classify the content type of each page section."""
+        system_prompt = (
+            "You are an expert at analyzing academic paper structure. "
+            "Classify the content type of each page section."
+        )
 
         prompt = f"""Classify this text from page {page_num} of {total_pages} pages.
 
@@ -169,7 +176,10 @@ Return only the classification word, nothing else."""
         self, text: str, content_type: str, keywords: List[str]
     ) -> Dict[str, Any]:
         """Extract structured content based on content type."""
-        system_prompt = f"""You are an expert academic researcher. Extract structured information from {content_type} sections of scientific papers."""
+        system_prompt = (
+            f"You are an expert academic researcher. Extract structured "
+            f"information from {content_type} sections of scientific papers."
+        )
 
         keyword_context = (
             f"Key terms to focus on: {', '.join(keywords[:10])}" if keywords else ""
@@ -246,7 +256,10 @@ Return JSON with:
 
     def fix_text_spacing(self, text: str) -> str:
         """Fix spacing and formatting issues in extracted text."""
-        system_prompt = """You are a text processing expert. Fix spacing, formatting, and readability issues in academic text extracted from PDFs."""
+        system_prompt = (
+            "You are a text processing expert. Fix spacing, formatting, and "
+            "readability issues in academic text extracted from PDFs."
+        )
 
         prompt = f"""Fix spacing and formatting issues in this academic text:
 
@@ -269,7 +282,10 @@ Return only the corrected text with no explanations."""
 
     def generate_summary(self, extraction_result: ExtractionResult) -> str:
         """Generate a comprehensive summary of the document."""
-        system_prompt = """You are an expert academic researcher. Create comprehensive summaries of scientific papers."""
+        system_prompt = (
+            "You are an expert academic researcher. Create comprehensive "
+            "summaries of scientific papers."
+        )
 
         # Prepare context
         metadata = extraction_result.metadata
@@ -325,7 +341,8 @@ class AdvancedPDFProcessor:
         """Load bibliography data from BibTeX file."""
         if not HAS_BIBTEXPARSER:
             print(
-                "Warning: bibtexparser not available. Install with: pip install bibtexparser"
+                "Warning: bibtexparser not available. "
+                "Install with: pip install bibtexparser"
             )
             return {}
 

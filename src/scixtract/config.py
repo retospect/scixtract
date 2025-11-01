@@ -112,7 +112,31 @@ class ConfigManager:
 
     def create_example_config(self, path: str = "scixtract.toml") -> str:
         """Create example TOML configuration file."""
-        return """# Scixtract Configuration\n# Copy to scixtract.toml and customize as needed\n\n[ollama]\nbase_url = \"http://localhost:11434\"\nmodel = \"qwen2.5:7b\"\ntimeout = 120\ntemperature = 0.1\ntop_p = 0.9\nnum_ctx = 8192\n\n[extraction]\noutput_dir = \"extractions\"\nupdate_knowledge = true\nsave_markdown = true\nsave_keywords = true\ncontext_length = 200\n\n[knowledge]\ndb_path = \"knowledge.db\"\nauto_update = true\nmax_results = 20\nexport_format = \"json\"\n"""
+        return """\
+# Scixtract Configuration
+# Copy to scixtract.toml and customize as needed
+
+[ollama]
+base_url = "http://localhost:11434"
+model = "qwen2.5:7b"
+timeout = 120
+temperature = 0.1
+top_p = 0.9
+num_ctx = 8192
+
+[extraction]
+output_dir = "extractions"
+update_knowledge = true
+save_markdown = true
+save_keywords = true
+context_length = 200
+
+[knowledge]
+db_path = "knowledge.db"
+auto_update = true
+max_results = 20
+export_format = "json"
+"""
 
     def print_config(self) -> None:
         """Print current configuration."""
@@ -122,7 +146,8 @@ class ConfigManager:
         c = self.config
         print(f"\n🤖 Ollama: {c.ollama.base_url} | {c.ollama.model}")
         print(
-            f"📄 Output: {c.extraction.output_dir} | Knowledge: {c.extraction.update_knowledge}"
+            f"📄 Output: {c.extraction.output_dir} | "
+            f"Knowledge: {c.extraction.update_knowledge}"
         )
         print(f"🧠 Database: {c.knowledge.db_path or 'default'}")
 

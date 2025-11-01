@@ -85,6 +85,9 @@ def generate_markdown(result: ExtractionResult, pdf_path: Path) -> str:
     lines = []
     metadata = result.metadata
 
+    # Prepare author string
+    authors_str = ", ".join(metadata.authors) if metadata.authors else "Unknown"
+
     # Header with metadata
     lines.extend(
         [
@@ -93,7 +96,7 @@ def generate_markdown(result: ExtractionResult, pdf_path: Path) -> str:
             "## Document Information",
             "",
             f"**Citation Key:** `{metadata.cite_key}`  ",
-            f"**Authors:** {', '.join(metadata.authors) if metadata.authors else 'Unknown'}  ",
+            f"**Authors:** {authors_str}  ",
             f"**Year:** {metadata.year or 'Unknown'}  ",
             f"**Journal:** {metadata.journal or 'Unknown'}  ",
             f"**DOI:** {metadata.doi or 'Not available'}  ",
@@ -137,7 +140,7 @@ def generate_markdown(result: ExtractionResult, pdf_path: Path) -> str:
                         [
                             "**Structured Information:**",
                             "",
-                            f"```json",
+                            "```json",
                             json.dumps(item["structured"], indent=2),
                             "```",
                             "",
@@ -243,7 +246,7 @@ def extract_command(args: argparse.Namespace) -> None:
         )
         print(f"📝 Extracted {len(result.all_keywords)} keywords")
         print(f"📄 Processed {len(result.pages)} pages")
-        print(f"📁 Saved files:")
+        print("📁 Saved files:")
         for file_type, file_path in saved_files.items():
             print(f"   {file_type}: {file_path}")
 
@@ -304,12 +307,12 @@ def knowledge_command(args: argparse.Namespace) -> None:
         print(f"   📝 Total keyword instances: {stats['total_keyword_instances']}")
 
         if stats["top_keywords"]:
-            print(f"\n🔥 Top Keywords:")
+            print("\n🔥 Top Keywords:")
             for keyword, freq in stats["top_keywords"][:5]:
                 print(f"   • {keyword}: {freq}")
 
         if stats["top_authors"]:
-            print(f"\n👥 Top Authors:")
+            print("\n👥 Top Authors:")
             for author, count in stats["top_authors"][:5]:
                 print(f"   • {author}: {count} papers")
 

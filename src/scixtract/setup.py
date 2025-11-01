@@ -158,9 +158,11 @@ class OllamaSetup:
         """Test if a model works correctly."""
         print(f"🧪 Testing model: {model_name}")
 
-        test_prompt = """Extract keywords from this text: "Catalytic conversion of nitrogen oxides to ammonia using electrochemical methods."
-
-Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
+        test_prompt = (
+            'Extract keywords from this text: "Catalytic conversion of '
+            'nitrogen oxides to ammonia using electrochemical methods."\n\n'
+            'Return JSON format: {"keywords": ["keyword1", "keyword2"]}'
+        )
 
         try:
             payload = {
@@ -187,7 +189,8 @@ Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
                         return True
                     else:
                         print(
-                            f"⚠ Model {model_name} works but output format needs improvement"
+                            f"⚠ Model {model_name} works but output format "
+                            "needs improvement"
                         )
                         return True
                 except json.JSONDecodeError:
@@ -338,7 +341,7 @@ def main() -> None:
         running = setup.check_ollama_running() if installed else False
         models = setup.get_installed_models() if running else []
 
-        print(f"\n📊 Status Summary:")
+        print("\n📊 Status Summary:")
         print(f"   Ollama installed: {'✅' if installed else '❌'}")
         print(f"   Service running: {'✅' if running else '❌'}")
         print(f"   Models available: {len(models)}")

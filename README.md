@@ -404,7 +404,7 @@ If you use this software in your research, please cite:
   title = {scixtract: AI-powered scientific PDF extraction using Ollama},
   year = {2024},
   url = {https://github.com/retostamm/scixtract},
-  version = {1.0.1}
+  version = {1.0.2}
 }
 ```
 

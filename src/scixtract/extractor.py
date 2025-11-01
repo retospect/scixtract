@@ -35,7 +35,7 @@ from .config import get_config
 class OllamaAIProcessor:
     """Advanced AI processor using Ollama with sophisticated prompting."""
     
-    def __init__(self, model: str = "llama3.2", base_url: str = "http://localhost:11434"):
+    def __init__(self, model: str = "qwen2.5:7b", base_url: str = "http://localhost:11434"):
         self.model = model
         self.base_url = base_url
         self.available = self._check_availability()
@@ -300,7 +300,7 @@ Keep the summary concise but comprehensive (300-500 words)."""
 class AdvancedPDFProcessor:
     """Advanced PDF processor with AI enhancement and tracking."""
     
-    def __init__(self, model: str = "llama3.2", bib_file: Optional[Path] = None):
+    def __init__(self, model: str = "qwen2.5:7b", bib_file: Optional[Path] = None):
         self.ai = OllamaAIProcessor(model)
         self.bib_data = self._load_bibliography(bib_file) if bib_file else {}
         

@@ -50,7 +50,7 @@ Main processor for PDF extraction with AI enhancement.
 
 ```python
 processor = AdvancedPDFProcessor(
-    model: str = "llama3.2",
+    model: str = "qwen2.5:7b",
     bib_file: Optional[Path] = None
 )
 
@@ -76,7 +76,7 @@ AI processing engine using Ollama.
 
 ```python
 ai = OllamaAIProcessor(
-    model: str = "llama3.2",
+    model: str = "qwen2.5:7b",
     base_url: str = "http://localhost:11434"
 )
 
@@ -262,7 +262,7 @@ Based on extensive testing with academic papers:
 - Academic content optimized - Understands research papers
 - Size: 19GB
 
-### llama3.2 (Lightweight)
+### qwen2.5:7b (Lightweight)
 - Good performance - Reliable results
 - Small size - Only 2GB
 - Fast processing - Quick turnaround
@@ -331,7 +331,7 @@ Based on extensive testing with academic papers:
 - Verify network connectivity to localhost:11434
 
 **Memory issues with large models:**
-- Use smaller models (llama3.2) for limited RAM
+- Use smaller models (qwen2.5:7b) for limited RAM
 - Close other applications to free memory
 - Consider cloud deployment for large-scale processing
 
@@ -344,7 +344,7 @@ Based on extensive testing with academic papers:
 
 ### Model Selection
 - Use qwen2.5:32b for best accuracy
-- Use llama3.2 for speed and memory efficiency
+- Use qwen2.5:7b for speed and memory efficiency
 - Consider model quantization for resource constraints
 
 ### Batch Processing

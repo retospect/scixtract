@@ -11,7 +11,7 @@ import time
 from scixtract import AdvancedPDFProcessor, KnowledgeTracker
 
 
-def process_pdf_batch(pdf_directory: Path, bib_file: Path = None, model: str = "llama3.2"):
+def process_pdf_batch(pdf_directory: Path, bib_file: Path = None, model: str = "qwen2.5:7b"):
     """Process all PDFs in a directory and build knowledge base."""
     
     # Find all PDF files
@@ -139,7 +139,7 @@ def main():
     # Configuration
     pdf_directory = Path("../test_data")
     bib_file = pdf_directory / "references.bib"
-    model = "llama3.2"  # Change to "qwen2.5:32b-instruct-q4_K_M" for better results
+    model = "qwen2.5:7b"  # Change to "qwen2.5:32b-instruct-q4_K_M" for better results
     
     print("🚀 AI PDF Extractor - Batch Processing Example")
     print("=" * 50)

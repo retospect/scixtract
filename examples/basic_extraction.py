@@ -23,13 +23,13 @@ def main():
     
     print(f"🚀 Processing PDF: {pdf_path.name}")
     
-    # Initialize the processor with default model (llama3.2)
+    # Initialize the processor with default model (qwen2.5:7b)
     processor = AdvancedPDFProcessor()
     
     # Check if AI is available
     if not processor.ai.available:
         print("❌ Ollama not available. Please install Ollama and run:")
-        print("   ollama pull llama3.2")
+        print("   ollama pull qwen2.5:7b")
         return
     
     try:

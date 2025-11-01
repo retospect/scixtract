@@ -368,8 +368,8 @@ def main() -> None:
     extract_parser = subparsers.add_parser('extract', help='Extract text from PDF')
     extract_parser.add_argument('pdf_file', help='PDF file to process')
     extract_parser.add_argument(
-        '--model', default='llama3.2',
-        help='Ollama model to use (default: llama3.2)'
+        '--model', default='qwen2.5:7b',
+        help='Ollama model to use (default: qwen2.5:7b)'
     )
     extract_parser.add_argument(
         '--output-dir', default='ai_extractions',

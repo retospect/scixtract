@@ -7,9 +7,9 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Tuple, Union
 
-from .config import ConfigManager, get_config
+from .config import ConfigManager
 from .extractor import AdvancedPDFProcessor
 from .knowledge import KnowledgeTracker
 from .models import ExtractionResult
@@ -51,14 +51,14 @@ def save_results(
     raw_file = output_dir / f"{base_name}_ai_extraction.json"
     with open(raw_file, "w", encoding="utf-8") as f:
         json.dump(result.to_dict(), f, indent=2, ensure_ascii=False)
-    saved_files["extraction_data"] = raw_file
+    saved_files["extraction_data"] = str(raw_file)
 
     # Save structured markdown
     md_file = output_dir / f"{base_name}_ai_processed.md"
     markdown_content = generate_markdown(result, pdf_path)
     with open(md_file, "w", encoding="utf-8") as f:
         f.write(markdown_content)
-    saved_files["markdown"] = md_file
+    saved_files["markdown"] = str(md_file)
 
     # Save keyword index
     keywords_file = output_dir / f"{base_name}_keywords.json"
@@ -75,7 +75,7 @@ def save_results(
             indent=2,
             ensure_ascii=False,
         )
-    saved_files["keywords"] = keywords_file
+    saved_files["keywords"] = str(keywords_file)
 
     return saved_files
 

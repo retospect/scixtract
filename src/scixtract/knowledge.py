@@ -106,7 +106,9 @@ class KnowledgeTracker:
         conn.commit()
         conn.close()
 
-    def add_extraction_result(self, result_data: Dict[str, Any], file_path: str) -> None:
+    def add_extraction_result(
+        self, result_data: Dict[str, Any], file_path: str
+    ) -> None:
         """Add extraction result to knowledge database."""
         metadata = result_data.get("metadata", {})
         pages = result_data.get("pages", [])

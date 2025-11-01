@@ -237,7 +237,7 @@ Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
             print(f"\n{status} {model_name}")
             print(f"   Size: {info['size']}")
             print(f"   Description: {info['description']}")
-            strengths = info.get('strengths', [])
+            strengths = info.get("strengths", [])
             if isinstance(strengths, list):
                 print(f"   Strengths: {', '.join(strengths)}")
 

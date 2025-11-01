@@ -241,7 +241,10 @@ Return JSON with:
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
 
         try:
-            return json.loads(response)
+            result = json.loads(response)
+            if isinstance(result, dict):
+                return result
+            return {"extraction_error": "Invalid response format"}
         except json.JSONDecodeError:
             return {"extraction_error": "Could not parse structured content"}
 
@@ -322,7 +325,7 @@ class AdvancedPDFProcessor:
         self.ai = OllamaAIProcessor(model)
         self.bib_data = self._load_bibliography(bib_file) if bib_file else {}
 
-    def _load_bibliography(self, bib_file: Path) -> Dict[str, Dict]:
+    def _load_bibliography(self, bib_file: Path) -> Dict[str, Dict[str, Any]]:
         """Load bibliography data from BibTeX file."""
         if not HAS_BIBTEXPARSER:
             print(

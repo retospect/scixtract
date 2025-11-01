@@ -150,7 +150,7 @@ class TestAdvancedPDFProcessor:
         mock_bibtexparser.load.return_value = mock_db
         
         bib_file = Path("test.bib")
-        with patch.object(bib_file, 'exists', return_value=True):
+        with patch('pathlib.Path.exists', return_value=True):
             with patch('builtins.open', create=True):
                 processor = AdvancedPDFProcessor("test-model", bib_file)
                 
@@ -199,7 +199,8 @@ class TestAdvancedPDFProcessor:
         mock_page = Mock()
         mock_page.get_text.return_value = "Test page content"
         mock_doc.load_page.return_value = mock_page
-        mock_doc.__len__.return_value = 2
+        # Configure the mock to support len() properly
+        mock_doc.__len__ = Mock(return_value=2)
         mock_fitz.open.return_value = mock_doc
         
         pdf_path = Path("test.pdf")

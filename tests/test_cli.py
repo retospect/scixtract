@@ -309,7 +309,7 @@ class TestExtractCommand:
         with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_pdf:
             temp_pdf_path = Path(temp_pdf.name)
         
-        with tempfile.NamedTemporaryFile(suffix='.json', delete=False) as temp_json:
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as temp_json:
             temp_json_path = Path(temp_json.name)
             json.dump({"test": "data"}, temp_json)
         

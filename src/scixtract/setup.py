@@ -9,13 +9,13 @@ import argparse
 from pathlib import Path
 import json
 import sys
-from typing import List
+from typing import List, Optional
 
 
 class OllamaSetup:
     """Setup and configuration for Ollama."""
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.base_url = "http://localhost:11434"
         self.recommended_models = {
             "llama3.2": {
@@ -232,7 +232,7 @@ Return JSON format: {"keywords": ["keyword1", "keyword2"]}"""
             print(f"   Description: {info['description']}")
             print(f"   Strengths: {', '.join(info['strengths'])}")
     
-    def setup_complete_system(self, model_name: str = None) -> bool:
+    def setup_complete_system(self, model_name: Optional[str] = None) -> bool:
         """Complete setup process."""
         print("🚀 Setting up Ollama for PDF processing...")
         

@@ -34,7 +34,7 @@ class OllamaAIProcessor:
         self.model = model
         self.base_url = base_url
         self.available = self._check_availability()
-        self.conversation_history = []
+        self.conversation_history: List[Dict[str, str]] = []
         
     def _check_availability(self) -> bool:
         """Check if Ollama is available and model exists."""
@@ -385,7 +385,7 @@ class AdvancedPDFProcessor:
         metadata.keywords = all_keywords[:20]  # Keep top 20 keywords
         
         # Step 2: Process each page
-        sections = {}
+        sections: Dict[str, Any] = {}
         
         for page in pages:
             # Fix text spacing

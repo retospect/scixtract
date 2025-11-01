@@ -47,7 +47,7 @@ class AIConfig:
     extraction: ExtractionConfig
     knowledge: KnowledgeConfig
     
-    def __init__(self):
+    def __init__(self) -> None:
         self.ollama = OllamaConfig()
         self.extraction = ExtractionConfig()
         self.knowledge = KnowledgeConfig()
@@ -162,29 +162,43 @@ class ConfigManager:
         """Load configuration from environment variables."""
         # Ollama settings
         if os.getenv('OLLAMA_BASE_URL'):
-            self.config.ollama.base_url = os.getenv('OLLAMA_BASE_URL')
+            base_url = os.getenv('OLLAMA_BASE_URL')
+            if base_url:
+                self.config.ollama.base_url = base_url
         if os.getenv('OLLAMA_MODEL'):
-            self.config.ollama.default_model = os.getenv('OLLAMA_MODEL')
+            model = os.getenv('OLLAMA_MODEL')
+            if model:
+                self.config.ollama.default_model = model
         if os.getenv('OLLAMA_TIMEOUT'):
             try:
-                self.config.ollama.timeout = int(os.getenv('OLLAMA_TIMEOUT'))
+                timeout_str = os.getenv('OLLAMA_TIMEOUT')
+                if timeout_str:
+                    self.config.ollama.timeout = int(timeout_str)
             except ValueError:
                 pass
         if os.getenv('OLLAMA_TEMPERATURE'):
             try:
-                self.config.ollama.temperature = float(os.getenv('OLLAMA_TEMPERATURE'))
+                temp_str = os.getenv('OLLAMA_TEMPERATURE')
+                if temp_str:
+                    self.config.ollama.temperature = float(temp_str)
             except ValueError:
                 pass
         
         # Extraction settings
         if os.getenv('AI_PDF_OUTPUT_DIR'):
-            self.config.extraction.output_dir = os.getenv('AI_PDF_OUTPUT_DIR')
+            output_dir = os.getenv('AI_PDF_OUTPUT_DIR')
+            if output_dir:
+                self.config.extraction.output_dir = output_dir
         if os.getenv('AI_PDF_UPDATE_KNOWLEDGE'):
-            self.config.extraction.update_knowledge = os.getenv('AI_PDF_UPDATE_KNOWLEDGE').lower() in ['true', '1', 'yes']
+            update_knowledge = os.getenv('AI_PDF_UPDATE_KNOWLEDGE')
+            if update_knowledge:
+                self.config.extraction.update_knowledge = update_knowledge.lower() in ['true', '1', 'yes']
         
         # Knowledge settings
         if os.getenv('AI_PDF_KNOWLEDGE_DB'):
-            self.config.knowledge.db_path = os.getenv('AI_PDF_KNOWLEDGE_DB')
+            db_path = os.getenv('AI_PDF_KNOWLEDGE_DB')
+            if db_path:
+                self.config.knowledge.db_path = db_path
     
     def save_config(self, config_path: Optional[str] = None, format: str = "json") -> None:
         """Save current configuration to file."""

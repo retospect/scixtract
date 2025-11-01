@@ -7,7 +7,7 @@ import json
 import sys
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Optional, List, Dict, Tuple, Any, Union
 
 from .extractor import AdvancedPDFProcessor
 from .knowledge import KnowledgeTracker
@@ -15,19 +15,20 @@ from .models import ExtractionResult
 from .config import ConfigManager, get_config
 
 
-def parse_makefile_args(args_list):
+def parse_makefile_args(args_list: List[str]) -> Tuple[Dict[str, Any], List[str]]:
     """Parse Makefile-style KEY=VALUE arguments."""
-    makefile_args = {}
-    remaining_args = []
+    makefile_args: Dict[str, Any] = {}
+    remaining_args: List[str] = []
     
     for arg in args_list:
         if '=' in arg and not arg.startswith('-'):
-            key, value = arg.split('=', 1)
+            key, value_str = arg.split('=', 1)
             # Convert to lowercase and handle boolean values
             key = key.lower()
-            if value.lower() in ['true', '1', 'yes', 'on']:
+            value: Union[str, bool] = value_str
+            if value_str.lower() in ['true', '1', 'yes', 'on']:
                 value = True
-            elif value.lower() in ['false', '0', 'no', 'off']:
+            elif value_str.lower() in ['false', '0', 'no', 'off']:
                 value = False
             makefile_args[key] = value
         else:

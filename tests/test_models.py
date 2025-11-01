@@ -2,9 +2,6 @@
 Tests for data models.
 """
 
-from datetime import datetime
-
-import pytest
 
 from scixtract.models import (
     ConceptNetwork,

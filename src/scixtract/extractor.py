@@ -3,13 +3,10 @@ Advanced AI-powered PDF text extraction and processing.
 """
 
 import json
-import os
-import re
 import time
 import warnings
-from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -34,7 +31,6 @@ try:
 except ImportError:
     HAS_BIBTEXPARSER = False
 
-from .config import get_config
 from .models import DocumentMetadata, ExtractionResult, PageContent
 
 

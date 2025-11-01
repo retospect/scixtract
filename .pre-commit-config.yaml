@@ -23,21 +23,51 @@ repos:
       - id: isort
         args: [--profile=black, --line-length=88]
 
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args: [--max-line-length=88, --extend-ignore=E203,W503]
-
   - repo: local
     hooks:
-      - id: mypy-check
+      - id: black-check
+        name: black formatting check
+        entry: black --check --verbose
+        language: system
+        types: [python]
+        args: [src/, tests/]
+        pass_filenames: false
+
+      - id: isort-check
+        name: isort import sorting check
+        entry: isort --check-only --verbose
+        language: system
+        types: [python]
+        args: [src/, tests/]
+        pass_filenames: false
+
+      - id: mypy-strict
         name: mypy type checking (strict)
-        entry: python -m mypy src/
+        entry: bash -c 'echo "🔍 Type checking source code..." && python -m mypy src/ --strict --ignore-missing-imports'
         language: system
         pass_filenames: false
         always_run: true
-        args: [--strict, --ignore-missing-imports]
+
+      - id: mypy-tests
+        name: mypy type checking tests (lenient)
+        entry: bash -c 'echo "🔍 Type checking tests (lenient)..." && python -m mypy tests/ --ignore-missing-imports --disable-error-code=no-untyped-def --disable-error-code=no-any-return || echo "⚠️ Test type checking completed with warnings"'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: flake8-strict
+        name: flake8 linting (strict)
+        entry: bash -c 'echo "🔍 Running flake8 with strict settings..." && flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: flake8-complexity
+        name: flake8 complexity check
+        entry: bash -c 'echo "🔍 Running additional code quality checks..." && flake8 src/ tests/ --select=C901 --max-complexity=10'
+        language: system
+        pass_filenames: false
+        always_run: true
 
       - id: pytest-fast
         name: fast unit tests

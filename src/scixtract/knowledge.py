@@ -6,13 +6,10 @@ import argparse
 import json
 import re
 import sqlite3
-from collections import Counter, defaultdict
-from dataclasses import asdict
+from collections import Counter
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
-
-from .models import ConceptNetwork, DocumentIndex, PageIndex
+from typing import Any, Dict, List, Optional, Tuple
 
 
 class KnowledgeTracker:

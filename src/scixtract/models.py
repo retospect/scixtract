@@ -4,7 +4,7 @@ Data models for AI PDF extraction and knowledge tracking.
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 @dataclass

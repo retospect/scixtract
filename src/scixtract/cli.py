@@ -37,7 +37,7 @@ def parse_makefile_args(args_list: List[str]) -> Tuple[Dict[str, Any], List[str]
     return makefile_args, remaining_args
 
 
-def save_results(result: ExtractionResult, output_dir: Path, pdf_path: Path) -> dict:
+def save_results(result: ExtractionResult, output_dir: Path, pdf_path: Path) -> Dict[str, str]:
     """Save extraction results in multiple formats."""
     base_name = pdf_path.stem
     saved_files = {}
@@ -189,7 +189,7 @@ def extract_command(args: argparse.Namespace) -> None:
         makefile_args.get("model")
         or getattr(args, "model", None)
         or os.getenv("OLLAMA_MODEL")
-        or config.ollama.default_model
+        or config.ollama.model
     )
 
     # Initialize processor with config
@@ -332,8 +332,7 @@ def config_command(args: argparse.Namespace) -> None:
         config_manager.print_config()
 
     elif args.save:
-        format_type = "yaml" if args.save.endswith((".yaml", ".yml")) else "json"
-        config_manager.save_config(args.save, format_type)
+        config_manager.save_config(args.save)
 
     else:
         print("📋 Configuration Management")

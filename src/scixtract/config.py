@@ -55,7 +55,7 @@ class Config:
     extraction: ExtractionConfig
     knowledge: KnowledgeConfig
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.ollama = OllamaConfig()
         self.extraction = ExtractionConfig()
         self.knowledge = KnowledgeConfig()
@@ -109,6 +109,20 @@ class ConfigManager:
 
         # Load from environment variables (override file config)
         self._load_from_environment()
+    
+    def create_example_config(self, path: str = "scixtract.toml") -> str:
+        """Create example TOML configuration file."""
+        return """# Scixtract Configuration\n# Copy to scixtract.toml and customize as needed\n\n[ollama]\nbase_url = \"http://localhost:11434\"\nmodel = \"qwen2.5:7b\"\ntimeout = 120\ntemperature = 0.1\ntop_p = 0.9\nnum_ctx = 8192\n\n[extraction]\noutput_dir = \"extractions\"\nupdate_knowledge = true\nsave_markdown = true\nsave_keywords = true\ncontext_length = 200\n\n[knowledge]\ndb_path = \"knowledge.db\"\nauto_update = true\nmax_results = 20\nexport_format = \"json\"\n"""
+    
+    def print_config(self) -> None:
+        """Print current configuration."""
+        print("📋 Scixtract Configuration:")
+        print("=" * 40)
+        
+        c = self.config
+        print(f"\n🤖 Ollama: {c.ollama.base_url} | {c.ollama.model}")
+        print(f"📄 Output: {c.extraction.output_dir} | Knowledge: {c.extraction.update_knowledge}")
+        print(f"🧠 Database: {c.knowledge.db_path or 'default'}")
 
     def _update_from_dict(self, data: dict) -> None:
         """Update config from dictionary data."""
@@ -133,10 +147,12 @@ class ConfigManager:
     def _load_from_environment(self) -> None:
         """Load configuration from environment variables."""
         # Ollama settings
-        if os.getenv("SCIXTRACT_OLLAMA_BASE_URL"):
-            self.config.ollama.base_url = os.getenv("SCIXTRACT_OLLAMA_BASE_URL")
-        if os.getenv("SCIXTRACT_OLLAMA_MODEL"):
-            self.config.ollama.model = os.getenv("SCIXTRACT_OLLAMA_MODEL")
+        base_url = os.getenv('SCIXTRACT_OLLAMA_BASE_URL')
+        if base_url:
+            self.config.ollama.base_url = base_url
+        model = os.getenv('SCIXTRACT_OLLAMA_MODEL')
+        if model:
+            self.config.ollama.model = model
         if os.getenv("SCIXTRACT_OLLAMA_TIMEOUT"):
             try:
                 self.config.ollama.timeout = int(os.getenv("SCIXTRACT_OLLAMA_TIMEOUT"))
@@ -151,16 +167,17 @@ class ConfigManager:
                 pass
 
         # Extraction settings
-        if os.getenv("SCIXTRACT_OUTPUT_DIR"):
-            self.config.extraction.output_dir = os.getenv("SCIXTRACT_OUTPUT_DIR")
-        if os.getenv("SCIXTRACT_UPDATE_KNOWLEDGE"):
-            self.config.extraction.update_knowledge = os.getenv(
-                "SCIXTRACT_UPDATE_KNOWLEDGE"
-            ).lower() in ["true", "1", "yes"]
+        output_dir = os.getenv('SCIXTRACT_OUTPUT_DIR')
+        if output_dir:
+            self.config.extraction.output_dir = output_dir
+        update_knowledge = os.getenv('SCIXTRACT_UPDATE_KNOWLEDGE')
+        if update_knowledge:
+            self.config.extraction.update_knowledge = update_knowledge.lower() in ['true', '1', 'yes']
 
         # Knowledge settings
-        if os.getenv("SCIXTRACT_KNOWLEDGE_DB_PATH"):
-            self.config.knowledge.db_path = os.getenv("SCIXTRACT_KNOWLEDGE_DB_PATH")
+        db_path = os.getenv('SCIXTRACT_KNOWLEDGE_DB_PATH')
+        if db_path:
+            self.config.knowledge.db_path = db_path
 
     def save_config(self, path: Optional[str] = None) -> None:
         """Save current configuration to TOML file."""

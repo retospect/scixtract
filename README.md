@@ -425,7 +425,8 @@ If you use this software in your research, please cite:
 
 ---
 
-**Made with ❤️ for the research community**
-=======
 For issues and questions, please visit the [GitHub repository](https://github.com/retospect/scixtract).
->>>>>>> b7ea440 (📝 Restructure documentation and update package metadata)
+
+---
+
+Built with [Windsurf](https://codeium.com/windsurf).

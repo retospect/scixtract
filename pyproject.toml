@@ -63,6 +63,7 @@ dev = [
     "bandit>=1.7.5,<2.0.0",
     "types-PyYAML>=6.0.0",
     "types-requests>=2.25.0",
+    "bump-my-version>=0.15.0",
 ]
 test = [
     "pytest>=7.4.0,<9.0.0",

@@ -2,7 +2,6 @@
 Tests for data models.
 """
 
-
 from scixtract.models import (
     ConceptNetwork,
     DocumentIndex,

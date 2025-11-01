@@ -2,21 +2,26 @@
 Advanced AI-powered PDF text extraction and processing.
 """
 
+import json
 import os
 import re
-import json
-import requests
 import time
 import warnings
-from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import requests
 
 try:
     # Suppress PyMuPDF/SWIG deprecation warnings during import
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=DeprecationWarning, module="importlib._bootstrap")
-        warnings.filterwarnings("ignore", message="builtin type.*has no __module__ attribute")
+        warnings.filterwarnings(
+            "ignore", category=DeprecationWarning, module="importlib._bootstrap"
+        )
+        warnings.filterwarnings(
+            "ignore", message="builtin type.*has no __module__ attribute"
+        )
         import fitz  # PyMuPDF
     HAS_PYMUPDF = True
 except ImportError:
@@ -24,23 +29,26 @@ except ImportError:
 
 try:
     import bibtexparser
+
     HAS_BIBTEXPARSER = True
 except ImportError:
     HAS_BIBTEXPARSER = False
 
-from .models import DocumentMetadata, PageContent, ExtractionResult
 from .config import get_config
+from .models import DocumentMetadata, ExtractionResult, PageContent
 
 
 class OllamaAIProcessor:
     """Advanced AI processor using Ollama with sophisticated prompting."""
-    
-    def __init__(self, model: str = "qwen2.5:7b", base_url: str = "http://localhost:11434"):
+
+    def __init__(
+        self, model: str = "qwen2.5:7b", base_url: str = "http://localhost:11434"
+    ):
         self.model = model
         self.base_url = base_url
         self.available = self._check_availability()
         self.conversation_history: List[Dict[str, str]] = []
-        
+
     def _check_availability(self) -> bool:
         """Check if Ollama is available and model exists."""
         try:
@@ -48,23 +56,25 @@ class OllamaAIProcessor:
             if response.status_code == 200:
                 models = response.json().get("models", [])
                 available_models = [m["name"] for m in models]
-                
+
                 # Check for exact match or partial match
                 model_available = any(
-                    self.model in name or name.startswith(self.model) 
+                    self.model in name or name.startswith(self.model)
                     for name in available_models
                 )
-                
+
                 return model_available
         except Exception:
             pass
         return False
-    
-    def _call_ollama(self, prompt: str, system_prompt: str = "", temperature: float = 0.1) -> str:
+
+    def _call_ollama(
+        self, prompt: str, system_prompt: str = "", temperature: float = 0.1
+    ) -> str:
         """Call Ollama API with error handling."""
         if not self.available:
             raise RuntimeError("Ollama not available")
-        
+
         try:
             payload = {
                 "model": self.model,
@@ -75,28 +85,26 @@ class OllamaAIProcessor:
                     "temperature": temperature,
                     "top_p": 0.9,
                     "num_ctx": 8192,
-                }
+                },
             }
-            
+
             response = requests.post(
-                f"{self.base_url}/api/generate",
-                json=payload,
-                timeout=120
+                f"{self.base_url}/api/generate", json=payload, timeout=120
             )
-            
+
             if response.status_code == 200:
                 result = response.json()
                 return result.get("response", "").strip()
             else:
                 return ""
-                
+
         except Exception:
             return ""
-    
+
     def extract_keywords_and_concepts(self, text: str) -> Dict[str, List[str]]:
         """First pass: Extract keywords and key concepts."""
         system_prompt = """You are an expert academic researcher specializing in analyzing scientific papers. Your task is to extract keywords and key concepts from academic text with high precision."""
-        
+
         prompt = f"""Analyze this academic text and extract:
 
 1. TECHNICAL KEYWORDS: Specific technical terms, methods, materials, equipment
@@ -118,9 +126,9 @@ Return your analysis in this exact JSON format:
 }}
 
 Be precise and extract only the most important terms. Focus on NOx, ammonia, catalysis, electrochemistry if present."""
-        
+
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
-        
+
         try:
             return json.loads(response)
         except json.JSONDecodeError:
@@ -129,13 +137,13 @@ Be precise and extract only the most important terms. Focus on NOx, ammonia, cat
                 "research_concepts": [],
                 "chemical_compounds": [],
                 "methodologies": [],
-                "equipment": []
+                "equipment": [],
             }
-    
+
     def classify_content_type(self, text: str, page_num: int, total_pages: int) -> str:
         """Classify the type of content on a page."""
         system_prompt = """You are an expert at analyzing academic paper structure. Classify the content type of each page section."""
-        
+
         prompt = f"""Classify this text from page {page_num} of {total_pages} pages.
 
 Text:
@@ -153,16 +161,20 @@ Classify as ONE of these types:
 - main: General main content that doesn't fit other categories
 
 Return only the classification word, nothing else."""
-        
+
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
         return response.lower().strip() if response else "main"
-    
-    def extract_structured_content(self, text: str, content_type: str, keywords: List[str]) -> Dict[str, Any]:
+
+    def extract_structured_content(
+        self, text: str, content_type: str, keywords: List[str]
+    ) -> Dict[str, Any]:
         """Extract structured content based on content type."""
         system_prompt = f"""You are an expert academic researcher. Extract structured information from {content_type} sections of scientific papers."""
-        
-        keyword_context = f"Key terms to focus on: {', '.join(keywords[:10])}" if keywords else ""
-        
+
+        keyword_context = (
+            f"Key terms to focus on: {', '.join(keywords[:10])}" if keywords else ""
+        )
+
         if content_type == "abstract":
             prompt = f"""Extract structured information from this abstract:
 
@@ -177,7 +189,7 @@ Return JSON with:
     "findings": "main findings",
     "significance": "research significance"
 }}"""
-        
+
         elif content_type == "methods":
             prompt = f"""Extract methodology information:
 
@@ -192,7 +204,7 @@ Return JSON with:
     "procedures": ["step1", "step2"],
     "conditions": "experimental conditions"
 }}"""
-        
+
         elif content_type == "results":
             prompt = f"""Extract results information:
 
@@ -207,7 +219,7 @@ Return JSON with:
     "measurements": ["measurement1", "measurement2"],
     "performance": "performance metrics if any"
 }}"""
-        
+
         else:
             prompt = f"""Extract key information from this {content_type} section:
 
@@ -221,18 +233,18 @@ Return JSON with:
     "key_terms": ["term1", "term2"],
     "important_info": "most important information"
 }}"""
-        
+
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
-        
+
         try:
             return json.loads(response)
         except json.JSONDecodeError:
             return {"extraction_error": "Could not parse structured content"}
-    
+
     def fix_text_spacing(self, text: str) -> str:
         """Fix spacing and formatting issues in extracted text."""
         system_prompt = """You are a text processing expert. Fix spacing, formatting, and readability issues in academic text extracted from PDFs."""
-        
+
         prompt = f"""Fix spacing and formatting issues in this academic text:
 
 RULES:
@@ -248,18 +260,20 @@ Text to fix:
 {text}
 
 Return only the corrected text with no explanations."""
-        
+
         response = self._call_ollama(prompt, system_prompt, temperature=0.1)
         return response if response else text
-    
+
     def generate_summary(self, extraction_result: ExtractionResult) -> str:
         """Generate a comprehensive summary of the document."""
         system_prompt = """You are an expert academic researcher. Create comprehensive summaries of scientific papers."""
-        
+
         # Prepare context
         metadata = extraction_result.metadata
-        all_text = " ".join([page.processed_text for page in extraction_result.pages[:5]])  # First 5 pages
-        
+        all_text = " ".join(
+            [page.processed_text for page in extraction_result.pages[:5]]
+        )  # First 5 pages
+
         prompt = f"""Create a comprehensive summary of this research paper:
 
 PAPER METADATA:
@@ -292,163 +306,172 @@ Create a structured summary with:
 [How this relates to NOx to ammonia conversion research, if applicable]
 
 Keep the summary concise but comprehensive (300-500 words)."""
-        
+
         response = self._call_ollama(prompt, system_prompt, temperature=0.2)
         return response if response else "Summary generation failed"
 
 
 class AdvancedPDFProcessor:
     """Advanced PDF processor with AI enhancement and tracking."""
-    
+
     def __init__(self, model: str = "qwen2.5:7b", bib_file: Optional[Path] = None):
         self.ai = OllamaAIProcessor(model)
         self.bib_data = self._load_bibliography(bib_file) if bib_file else {}
-        
+
     def _load_bibliography(self, bib_file: Path) -> Dict[str, Dict]:
         """Load bibliography data from BibTeX file."""
         if not HAS_BIBTEXPARSER:
-            print("Warning: bibtexparser not available. Install with: pip install bibtexparser")
+            print(
+                "Warning: bibtexparser not available. Install with: pip install bibtexparser"
+            )
             return {}
-            
+
         if not bib_file.exists():
             print(f"Warning: Bibliography file not found: {bib_file}")
             return {}
-        
+
         try:
-            with open(bib_file, 'r', encoding='utf-8') as f:
+            with open(bib_file, "r", encoding="utf-8") as f:
                 bib_database = bibtexparser.load(f)
-            
-            return {entry['ID']: entry for entry in bib_database.entries}
+
+            return {entry["ID"]: entry for entry in bib_database.entries}
         except Exception as e:
             print(f"Warning: Could not load bibliography: {e}")
             return {}
-    
+
     def _get_metadata_from_bib(self, cite_key: str) -> DocumentMetadata:
         """Extract metadata from bibliography entry."""
         metadata = DocumentMetadata(cite_key=cite_key)
-        
+
         if cite_key in self.bib_data:
             entry = self.bib_data[cite_key]
-            metadata.title = entry.get('title', '').replace('{', '').replace('}', '')
-            metadata.year = entry.get('year', '')
-            metadata.journal = entry.get('journal', '')
-            metadata.doi = entry.get('doi', '')
-            metadata.url = entry.get('url', '')
-            
+            metadata.title = entry.get("title", "").replace("{", "").replace("}", "")
+            metadata.year = entry.get("year", "")
+            metadata.journal = entry.get("journal", "")
+            metadata.doi = entry.get("doi", "")
+            metadata.url = entry.get("url", "")
+
             # Parse authors
-            authors_str = entry.get('author', '')
+            authors_str = entry.get("author", "")
             if authors_str:
                 # Simple author parsing (could be improved)
-                authors = [author.strip() for author in authors_str.split(' and ')]
+                authors = [author.strip() for author in authors_str.split(" and ")]
                 metadata.authors = authors
-        
+
         return metadata
-    
+
     def extract_pdf_content(self, pdf_path: Path) -> List[PageContent]:
         """Extract content from PDF with layout analysis."""
         if not HAS_PYMUPDF:
-            raise RuntimeError("PyMuPDF not available. Install with: pip install PyMuPDF")
-        
+            raise RuntimeError(
+                "PyMuPDF not available. Install with: pip install PyMuPDF"
+            )
+
         try:
             doc = fitz.open(pdf_path)
             pages = []
-            
+
             for page_num in range(len(doc)):
                 page = doc.load_page(page_num)
-                
+
                 # Extract text with better formatting
                 text = page.get_text("text")
-                
+
                 # Create page content
-                page_content = PageContent(
-                    page_num=page_num + 1,
-                    raw_text=text
-                )
-                
+                page_content = PageContent(page_num=page_num + 1, raw_text=text)
+
                 pages.append(page_content)
-            
+
             doc.close()
             return pages
-            
+
         except Exception as e:
             raise RuntimeError(f"PDF extraction failed: {e}")
-    
-    def process_with_ai(self, pages: List[PageContent], metadata: DocumentMetadata) -> ExtractionResult:
+
+    def process_with_ai(
+        self, pages: List[PageContent], metadata: DocumentMetadata
+    ) -> ExtractionResult:
         """Process pages with AI enhancement."""
         if not self.ai.available:
-            raise RuntimeError("AI processing not available. Please install and configure Ollama.")
-        
+            raise RuntimeError(
+                "AI processing not available. Please install and configure Ollama."
+            )
+
         # Step 1: Extract keywords from first few pages
         combined_text = " ".join([page.raw_text for page in pages[:3]])
         keyword_data = self.ai.extract_keywords_and_concepts(combined_text)
-        
+
         # Combine all keywords
         all_keywords = []
         for keyword_list in keyword_data.values():
             all_keywords.extend(keyword_list)
-        
+
         metadata.keywords = all_keywords[:20]  # Keep top 20 keywords
-        
+
         # Step 2: Process each page
         sections: Dict[str, Any] = {}
-        
+
         for page in pages:
             # Fix text spacing
             page.processed_text = self.ai.fix_text_spacing(page.raw_text)
-            
+
             # Classify content type
             page.content_type = self.ai.classify_content_type(
                 page.processed_text, page.page_num, len(pages)
             )
-            
+
             # Extract structured content
             structured = self.ai.extract_structured_content(
                 page.processed_text, page.content_type, all_keywords
             )
-            
+
             # Store in sections
             if page.content_type not in sections:
                 sections[page.content_type] = []
-            sections[page.content_type].append({
-                "page": page.page_num,
-                "content": page.processed_text,
-                "structured": structured
-            })
-        
+            sections[page.content_type].append(
+                {
+                    "page": page.page_num,
+                    "content": page.processed_text,
+                    "structured": structured,
+                }
+            )
+
         # Step 3: Create extraction result
         result = ExtractionResult(
             metadata=metadata,
             pages=pages,
             sections=sections,
             all_keywords=all_keywords,
-            key_concepts=keyword_data.get("research_concepts", [])
+            key_concepts=keyword_data.get("research_concepts", []),
         )
-        
+
         return result
-    
-    def process_pdf(self, pdf_path: Path, bib_file: Optional[Path] = None) -> ExtractionResult:
+
+    def process_pdf(
+        self, pdf_path: Path, bib_file: Optional[Path] = None
+    ) -> ExtractionResult:
         """Main processing function."""
         start_time = time.time()
-        
+
         # Load bibliography if provided
         if bib_file and not self.bib_data:
             self.bib_data = self._load_bibliography(bib_file)
-        
+
         # Get cite key from filename
         cite_key = pdf_path.stem
-        
+
         # Get metadata from bibliography
         metadata = self._get_metadata_from_bib(cite_key)
-        
+
         # Extract PDF content
         pages = self.extract_pdf_content(pdf_path)
         metadata.page_count = len(pages)
-        
+
         # Process with AI
         result = self.process_with_ai(pages, metadata)
-        
+
         # Calculate processing time
         processing_time = time.time() - start_time
         result.metadata.processing_time = processing_time
-        
+
         return result

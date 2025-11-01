@@ -14,11 +14,11 @@ __email__ = "reto.stamm@ul.ie"
 
 from .extractor import AdvancedPDFProcessor, OllamaAIProcessor
 from .knowledge import KnowledgeTracker
-from .models import DocumentMetadata, PageContent, ExtractionResult
+from .models import DocumentMetadata, ExtractionResult, PageContent
 
 __all__ = [
     "AdvancedPDFProcessor",
-    "OllamaAIProcessor", 
+    "OllamaAIProcessor",
     "KnowledgeTracker",
     "DocumentMetadata",
     "PageContent",

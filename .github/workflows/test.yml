@@ -27,17 +27,29 @@ jobs:
         python -m pip install --upgrade pip
         pip install -e ".[dev]"
 
+    - name: Check code formatting with black
+      run: |
+        # Check if code is properly formatted
+        black --check --diff src/ tests/
+
+    - name: Check import sorting with isort
+      run: |
+        # Check if imports are properly sorted
+        isort --check-only --diff src/ tests/
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        flake8 src/ tests/ --count --exit-zero --max-complexity=10 --max-line-length=88 --statistics
 
     - name: Type check with mypy
       run: |
-        # Run mypy with specific error codes disabled for now
+        # Run mypy on source code
         mypy src/ --ignore-missing-imports --disable-error-code=no-any-return --disable-error-code=union-attr --disable-error-code=arg-type
+        # Run mypy on tests (more lenient)
+        mypy tests/ --ignore-missing-imports --disable-error-code=no-any-return --disable-error-code=union-attr --disable-error-code=arg-type --disable-error-code=no-untyped-def || echo "⚠️ Test type checking has issues (non-blocking)"
 
     - name: Test with pytest
       run: |
@@ -90,6 +102,44 @@ jobs:
         stats = tracker.get_document_stats()
         print(f'✅ Knowledge tracker initialized: {stats}')
         "
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Format code with black (check only)
+      run: |
+        black --check --verbose src/ tests/
+
+    - name: Sort imports with isort (check only)
+      run: |
+        isort --check-only --verbose src/ tests/
+
+    - name: Comprehensive type checking
+      run: |
+        echo "🔍 Type checking source code..."
+        mypy src/ --strict --ignore-missing-imports
+        echo "🔍 Type checking tests (lenient)..."
+        mypy tests/ --ignore-missing-imports --disable-error-code=no-untyped-def --disable-error-code=no-any-return || echo "⚠️ Test type checking completed with warnings"
+
+    - name: Advanced linting
+      run: |
+        echo "🔍 Running flake8 with strict settings..."
+        flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503
+        echo "🔍 Running additional code quality checks..."
+        flake8 src/ tests/ --select=C901 --max-complexity=10
 
   security-scan:
     runs-on: ubuntu-latest

@@ -1,23 +1,23 @@
 # Scixtract Configuration
 # Copy to scixtract.toml and customize as needed
 
-# Ollama AI settings
-ollama_base_url = "http://localhost:11434"
-ollama_model = "qwen2.5:7b"
-ollama_timeout = 120
-ollama_temperature = 0.1
-ollama_top_p = 0.9
-ollama_num_ctx = 8192
+[ollama]
+base_url = "http://localhost:11434"
+model = "qwen2.5:7b"
+timeout = 120
+temperature = 0.1
+top_p = 0.9
+num_ctx = 8192
 
-# Extraction settings
+[extraction]
 output_dir = "extractions"
 update_knowledge = true
 save_markdown = true
 save_keywords = true
 context_length = 200
 
-# Knowledge database settings
-knowledge_db_path = "knowledge.db"
-knowledge_auto_update = true
-knowledge_max_results = 20
-knowledge_export_format = "json"
+[knowledge]
+db_path = "knowledge.db"
+auto_update = true
+max_results = 20
+export_format = "json"

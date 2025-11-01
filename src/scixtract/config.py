@@ -1,13 +1,12 @@
 """
-Configuration management for scixtract using hierarchical-conf.
+Configuration management for scixtract using TOML.
 """
 
 import sys
+import os
 from pathlib import Path
 from typing import Optional
-from dataclasses import dataclass
-
-from hierarchical_conf import ConfigManager as HierarchicalConfigManager
+from dataclasses import dataclass, asdict
 
 if sys.version_info >= (3, 11):
     import tomllib
@@ -16,32 +15,50 @@ else:
 
 
 @dataclass
-class Config:
-    """Scixtract configuration."""
-    # Ollama settings
-    ollama_base_url: str = "http://localhost:11434"
-    ollama_model: str = "qwen2.5:7b"
-    ollama_timeout: int = 120
-    ollama_temperature: float = 0.1
-    ollama_top_p: float = 0.9
-    ollama_num_ctx: int = 8192
-    
-    # Extraction settings
+class OllamaConfig:
+    """Ollama configuration settings."""
+    base_url: str = "http://localhost:11434"
+    model: str = "qwen2.5:7b"
+    timeout: int = 120
+    temperature: float = 0.1
+    top_p: float = 0.9
+    num_ctx: int = 8192
+
+
+@dataclass
+class ExtractionConfig:
+    """Extraction configuration settings."""
     output_dir: str = "extractions"
     update_knowledge: bool = True
     save_markdown: bool = True
     save_keywords: bool = True
     context_length: int = 200
+
+
+@dataclass
+class KnowledgeConfig:
+    """Knowledge configuration settings."""
+    db_path: Optional[str] = None
+    auto_update: bool = True
+    max_results: int = 20
+    export_format: str = "json"
+
+
+@dataclass
+class Config:
+    """Scixtract configuration with nested structure for CLI compatibility."""
+    ollama: OllamaConfig
+    extraction: ExtractionConfig
+    knowledge: KnowledgeConfig
     
-    # Knowledge settings
-    knowledge_db_path: Optional[str] = None
-    knowledge_auto_update: bool = True
-    knowledge_max_results: int = 20
-    knowledge_export_format: str = "json"
+    def __init__(self):
+        self.ollama = OllamaConfig()
+        self.extraction = ExtractionConfig()
+        self.knowledge = KnowledgeConfig()
 
 
 class ConfigManager:
-    """Clean config manager using hierarchical-conf."""
+    """Simple TOML-based config manager."""
     
     CONFIG_PATHS = [
         "scixtract.toml",
@@ -50,42 +67,139 @@ class ConfigManager:
     ]
     
     def __init__(self, config_path: Optional[str] = None):
-        """Initialize config manager with hierarchical-conf."""
-        config_paths = [config_path] if config_path else self.CONFIG_PATHS
-        
-        self.manager = HierarchicalConfigManager(
-            config_class=Config,
-            config_paths=config_paths,
-            env_prefix="SCIXTRACT_",
-            auto_load=True
-        )
+        """Initialize config manager."""
+        self.config_path = config_path
+        self.config = Config()
+        self.load_config()
     
-    @property
-    def config(self) -> Config:
-        """Get current configuration."""
-        return self.manager.config
+    def find_config_file(self) -> Optional[Path]:
+        """Find the first existing configuration file."""
+        if self.config_path:
+            config_file = Path(self.config_path).expanduser()
+            if config_file.exists():
+                return config_file
+            else:
+                raise FileNotFoundError(f"Specified config file not found: {self.config_path}")
+        
+        # Search for default config files
+        for config_path in self.CONFIG_PATHS:
+            config_file = Path(config_path).expanduser()
+            if config_file.exists():
+                return config_file
+        
+        return None
+    
+    def load_config(self) -> None:
+        """Load configuration from TOML file and environment variables."""
+        config_file = self.find_config_file()
+        
+        if config_file:
+            try:
+                with open(config_file, 'rb') as f:
+                    data = tomllib.load(f)
+                self._update_from_dict(data)
+            except Exception as e:
+                print(f"Warning: Could not load config file {config_file}: {e}")
+        
+        # Load from environment variables (override file config)
+        self._load_from_environment()
+    
+    def _update_from_dict(self, data: dict) -> None:
+        """Update config from dictionary data."""
+        if 'ollama' in data:
+            ollama_data = data['ollama']
+            for key, value in ollama_data.items():
+                if hasattr(self.config.ollama, key):
+                    setattr(self.config.ollama, key, value)
+        
+        if 'extraction' in data:
+            extraction_data = data['extraction']
+            for key, value in extraction_data.items():
+                if hasattr(self.config.extraction, key):
+                    setattr(self.config.extraction, key, value)
+        
+        if 'knowledge' in data:
+            knowledge_data = data['knowledge']
+            for key, value in knowledge_data.items():
+                if hasattr(self.config.knowledge, key):
+                    setattr(self.config.knowledge, key, value)
+    
+    def _load_from_environment(self) -> None:
+        """Load configuration from environment variables."""
+        # Ollama settings
+        if os.getenv('SCIXTRACT_OLLAMA_BASE_URL'):
+            self.config.ollama.base_url = os.getenv('SCIXTRACT_OLLAMA_BASE_URL')
+        if os.getenv('SCIXTRACT_OLLAMA_MODEL'):
+            self.config.ollama.model = os.getenv('SCIXTRACT_OLLAMA_MODEL')
+        if os.getenv('SCIXTRACT_OLLAMA_TIMEOUT'):
+            try:
+                self.config.ollama.timeout = int(os.getenv('SCIXTRACT_OLLAMA_TIMEOUT'))
+            except ValueError:
+                pass
+        if os.getenv('SCIXTRACT_OLLAMA_TEMPERATURE'):
+            try:
+                self.config.ollama.temperature = float(os.getenv('SCIXTRACT_OLLAMA_TEMPERATURE'))
+            except ValueError:
+                pass
+        
+        # Extraction settings
+        if os.getenv('SCIXTRACT_OUTPUT_DIR'):
+            self.config.extraction.output_dir = os.getenv('SCIXTRACT_OUTPUT_DIR')
+        if os.getenv('SCIXTRACT_UPDATE_KNOWLEDGE'):
+            self.config.extraction.update_knowledge = os.getenv('SCIXTRACT_UPDATE_KNOWLEDGE').lower() in ['true', '1', 'yes']
+        
+        # Knowledge settings
+        if os.getenv('SCIXTRACT_KNOWLEDGE_DB_PATH'):
+            self.config.knowledge.db_path = os.getenv('SCIXTRACT_KNOWLEDGE_DB_PATH')
     
     def save_config(self, path: Optional[str] = None) -> None:
         """Save current configuration to TOML file."""
-        self.manager.save_config(path)
-    
-    def create_example_config(self, path: str = "scixtract.toml") -> str:
-        """Create example TOML configuration file."""
-        example = Config()
-        return self.manager.to_toml(example)
-    
-    
-    def print_config(self) -> None:
-        """Print current configuration."""
-        print("📋 Scixtract Configuration:")
-        print("=" * 40)
+        if path:
+            output_path = Path(path).expanduser()
+        else:
+            output_path = Path("scixtract.toml")
         
-        c = self.config
-        print(f"\n🤖 Ollama: {c.ollama_base_url} | {c.ollama_model}")
-        print(f"📄 Output: {c.output_dir} | Knowledge: {c.update_knowledge}")
-        print(f"🧠 Database: {c.knowledge_db_path or 'default'}")
-
-
+        # Convert config to dictionary
+        config_dict = {
+            "ollama": asdict(self.config.ollama),
+            "extraction": asdict(self.config.extraction),
+            "knowledge": asdict(self.config.knowledge)
+        }
+        
+        # Create directory if needed
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        try:
+            import tomli_w
+            with open(output_path, 'wb') as f:
+                tomli_w.dump(config_dict, f)
+            print(f"Configuration saved to: {output_path}")
+        except ImportError:
+            # Fallback to manual TOML writing
+            with open(output_path, 'w') as f:
+                f.write("[ollama]\n")
+                for key, value in config_dict["ollama"].items():
+                    if isinstance(value, str):
+                        f.write(f'{key} = "{value}"\n')
+                    else:
+                        f.write(f'{key} = {value}\n')
+                
+                f.write("\n[extraction]\n")
+                for key, value in config_dict["extraction"].items():
+                    if isinstance(value, str):
+                        f.write(f'{key} = "{value}"\n')
+                    else:
+                        f.write(f'{key} = {value}\n')
+                
+                f.write("\n[knowledge]\n")
+                for key, value in config_dict["knowledge"].items():
+                    if value is not None:
+                        if isinstance(value, str):
+                            f.write(f'{key} = "{value}"\n')
+                        else:
+                            f.write(f'{key} = {value}\n')
+            
+            print(f"Configuration saved to: {output_path}")
 
 
 def get_config(config_path: Optional[str] = None) -> Config:

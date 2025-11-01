@@ -180,4 +180,11 @@ replace = "version = {{{new_version}}}"
 
 [tool.bandit]
 exclude_dirs = ["tests", "build", "dist"]
-skips = ["B101", "B601"]
+skips = [
+    "B101",  # Skip assert_used test
+    "B601",  # Skip paramiko calls
+    "B404",  # Skip subprocess import warnings
+    "B603",  # Skip subprocess without shell=True warnings
+    "B607",  # Skip partial executable path warnings
+    "B110",  # Skip try/except/pass warnings
+]

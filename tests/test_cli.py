@@ -57,7 +57,7 @@ class TestSaveResults:
             assert "keywords" in saved_files
 
             # Check extraction data file
-            extraction_file = saved_files["extraction_data"]
+            extraction_file = Path(saved_files["extraction_data"])
             assert extraction_file.exists()
 
             with open(extraction_file, "r") as f:
@@ -67,7 +67,7 @@ class TestSaveResults:
             assert len(data["pages"]) == 1
 
             # Check markdown file
-            markdown_file = saved_files["markdown"]
+            markdown_file = Path(saved_files["markdown"])
             assert markdown_file.exists()
 
             with open(markdown_file, "r") as f:
@@ -77,7 +77,7 @@ class TestSaveResults:
             assert "test2024" in content
 
             # Check keywords file
-            keywords_file = saved_files["keywords"]
+            keywords_file = Path(saved_files["keywords"])
             assert keywords_file.exists()
 
             with open(keywords_file, "r") as f:

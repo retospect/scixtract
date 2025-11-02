@@ -173,10 +173,6 @@ filename = "src/scixtract/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 
-[[tool.bumpversion.files]]
-filename = "README.md"
-search = "version = {{{current_version}}}"
-replace = "version = {{{new_version}}}"
 
 [tool.bandit]
 exclude_dirs = ["tests", "build", "dist"]

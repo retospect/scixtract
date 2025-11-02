@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "scixtract"
-version = "1.0.3"
+version = "1.0.4"
 description = "AI-assisted scientific PDF text extraction using local Ollama models"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
@@ -157,7 +157,7 @@ exclude_lines = [
 
 
 [tool.bumpversion]
-current_version = "1.0.3"
+current_version = "1.0.4"
 commit = true
 tag = true
 tag_name = "v{new_version}"

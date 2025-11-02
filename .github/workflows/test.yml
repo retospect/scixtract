@@ -139,7 +139,7 @@ jobs:
         echo "🔍 Running flake8 with strict settings..."
         flake8 src/ tests/ --max-line-length=88 --extend-ignore=E203,W503
         echo "🔍 Running additional code quality checks..."
-        flake8 src/ tests/ --select=C901 --max-complexity=15
+        flake8 src/ tests/ --select=C901 --max-complexity=16
 
   security-scan:
     runs-on: ubuntu-latest

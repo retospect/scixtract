@@ -8,7 +8,7 @@ Author: Reto Stamm
 Email: reto.stamm@ul.ie
 """
 
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __author__ = "Reto Stamm"
 __email__ = "reto.stamm@ul.ie"
 

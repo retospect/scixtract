@@ -37,6 +37,9 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
+# pip-tools / ad-hoc lockfiles (Poetry is the source of truth)
+requirements.txt
+
 # Unit test / coverage reports
 htmlcov/
 .tox/

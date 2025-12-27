@@ -92,11 +92,17 @@ class OllamaAIProcessor:
                 result = response.json()
                 response_text = result.get("response", "")
                 return str(response_text).strip() if response_text else ""
-            else:
-                return ""
 
-        except Exception:
-            return ""
+            detail = response.text.strip() if getattr(response, "text", None) else ""
+            raise RuntimeError(
+                "Ollama request failed "
+                f"(status={response.status_code}, model={self.model}): {detail}"
+            )
+
+        except requests.exceptions.RequestException as e:
+            raise RuntimeError(
+                f"Ollama request failed (model={self.model}): {e}"
+            ) from e
 
     def extract_keywords_and_concepts(self, text: str) -> Dict[str, List[str]]:
         """First pass: Extract keywords and key concepts."""

@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 
 import pytest
+import requests
 
 from scixtract.extractor import AdvancedPDFProcessor, OllamaAIProcessor
 from scixtract.models import DocumentMetadata, PageContent
@@ -57,6 +58,27 @@ class TestOllamaAIProcessor:
         self.processor.available = False
 
         with pytest.raises(RuntimeError, match="Ollama not available"):
+            self.processor._call_ollama("test prompt")
+
+    @patch("scixtract.extractor.requests.post")
+    def test_call_ollama_http_error_raises(self, mock_post):
+        """Test Ollama API call raises on non-200 responses."""
+        mock_response = Mock()
+        mock_response.status_code = 500
+        mock_response.text = "server error"
+        mock_post.return_value = mock_response
+
+        self.processor.available = True
+        with pytest.raises(RuntimeError, match=r"Ollama request failed"):
+            self.processor._call_ollama("test prompt")
+
+    @patch("scixtract.extractor.requests.post")
+    def test_call_ollama_request_exception_raises(self, mock_post):
+        """Test Ollama API call raises on request exceptions."""
+        mock_post.side_effect = requests.exceptions.ConnectionError("no route")
+
+        self.processor.available = True
+        with pytest.raises(RuntimeError, match=r"Ollama request failed"):
             self.processor._call_ollama("test prompt")
 
     @patch("scixtract.extractor.requests.post")

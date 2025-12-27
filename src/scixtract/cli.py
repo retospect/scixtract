@@ -3,6 +3,7 @@ Command-line interface for AI PDF extractor.
 """
 
 import argparse
+import importlib.metadata
 import json
 import os
 import sys
@@ -13,6 +14,14 @@ from .config import ConfigManager
 from .extractor import AdvancedPDFProcessor
 from .knowledge import KnowledgeTracker
 from .models import ExtractionResult
+from .text_fix import fix_paragraph_hyphenation
+
+
+def get_package_version() -> str:
+    try:
+        return importlib.metadata.version("scixtract")
+    except importlib.metadata.PackageNotFoundError:
+        return "0+unknown"
 
 
 def parse_makefile_args(args_list: List[str]) -> Tuple[Dict[str, Any], List[str]]:
@@ -51,6 +60,8 @@ def save_results(
     raw_file = output_dir / f"{base_name}_ai_extraction.json"
     with open(raw_file, "w", encoding="utf-8") as f:
         json.dump(result.to_dict(), f, indent=2, ensure_ascii=False)
+        f.flush()
+        os.fsync(f.fileno())
     saved_files["extraction_data"] = str(raw_file)
 
     # Save structured markdown
@@ -58,6 +69,8 @@ def save_results(
     markdown_content = generate_markdown(result, pdf_path)
     with open(md_file, "w", encoding="utf-8") as f:
         f.write(markdown_content)
+        f.flush()
+        os.fsync(f.fileno())
     saved_files["markdown"] = str(md_file)
 
     # Save keyword index
@@ -75,6 +88,8 @@ def save_results(
             indent=2,
             ensure_ascii=False,
         )
+        f.flush()
+        os.fsync(f.fileno())
     saved_files["keywords"] = str(keywords_file)
 
     return saved_files
@@ -153,6 +168,19 @@ def generate_markdown(result: ExtractionResult, pdf_path: Path) -> str:
         for item in result.sections["references"]:
             lines.extend([f"### Page {item['page']}", "", item["content"], ""])
 
+    # Add extraction complete marker
+    lines.extend(
+        [
+            "",
+            "---",
+            "",
+            "**EXTRACTION_COMPLETE**",
+            f"*Processed {metadata.page_count} pages in "
+            f"{metadata.processing_time:.1f} seconds*",
+            "",
+        ]
+    )
+
     return "\n".join(lines)
 
 
@@ -211,7 +239,29 @@ def extract_command(args: argparse.Namespace) -> None:
         print(f"📋 Citation key: {pdf_path.stem}")
         print(f"🤖 AI Model: {model}")
 
-        # Process PDF
+        # Check for existing partial extraction to resume from
+        base_name = pdf_path.stem
+        md_file = output_dir / f"{base_name}_ai_processed.md"
+        json_file = output_dir / f"{base_name}_ai_extraction.json"
+
+        if json_file.exists() and md_file.exists():
+            # Check if extraction is complete
+            with open(md_file, "r", encoding="utf-8") as f:
+                md_content = f.read()
+                if "EXTRACTION_COMPLETE" not in md_content:
+                    # Load partial extraction
+                    print("📂 Found partial extraction, checking resume point...")
+                    with open(json_file, "r", encoding="utf-8") as jf:
+                        data = json.load(jf)
+                        if data.get("pages"):
+                            # Find last completed page
+                            last_page = max(p["page_num"] for p in data["pages"])
+                            print(f"↻ Resuming from page {last_page + 1}...")
+                else:
+                    print("✓ Extraction already complete, skipping...")
+                    return
+
+        # Process PDF (with optional resume and incremental saving)
         result = processor.process_pdf(pdf_path, bib_file)
 
         # Save results
@@ -344,6 +394,27 @@ def config_command(args: argparse.Namespace) -> None:
         print("Use --help for available options")
 
 
+def text_fix_command(args: argparse.Namespace) -> None:
+    if args.input == "-":
+        text = sys.stdin.read()
+    else:
+        input_path = Path(args.input)
+        if not input_path.exists():
+            print(f"❌ Input file not found: {args.input}")
+            sys.exit(1)
+        text = input_path.read_text(encoding="utf-8")
+
+    fixed = fix_paragraph_hyphenation(text, infer_paragraphs=args.infer_paragraphs)
+
+    if args.output == "-":
+        sys.stdout.write(fixed)
+        return
+
+    output_path = Path(args.output)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(fixed, encoding="utf-8")
+
+
 def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
@@ -370,6 +441,12 @@ def main() -> None:
 
     # Global options
     parser.add_argument("--config", "-c", help="Path to configuration file")
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {get_package_version()}",
+        help="Show version and exit",
+    )
     parser.add_argument(
         "--verbose", "-v", action="store_true", help="Enable verbose output"
     )
@@ -434,6 +511,32 @@ def main() -> None:
     )
     config_parser.add_argument("--save", help="Save current configuration to file")
 
+    # Text fix command
+    text_fix_parser = subparsers.add_parser(
+        "text-fix",
+        help=(
+            "Fix PDF-extracted text: remove line-break hyphenation and reflow "
+            "paragraphs"
+        ),
+    )
+    text_fix_parser.add_argument(
+        "input",
+        help="Input text file path, or '-' for stdin",
+    )
+    text_fix_parser.add_argument(
+        "--output",
+        "-o",
+        default="-",
+        help="Output file path, or '-' for stdout (default: '-')",
+    )
+    text_fix_parser.add_argument(
+        "--no-infer-paragraphs",
+        action="store_false",
+        dest="infer_paragraphs",
+        default=True,
+        help="Disable paragraph inference when blank lines are missing",
+    )
+
     # Parse arguments, handling Makefile-style KEY=VALUE syntax
     import sys
 
@@ -449,6 +552,8 @@ def main() -> None:
         knowledge_command(args)
     elif args.command == "config":
         config_command(args)
+    elif args.command == "text-fix":
+        text_fix_command(args)
     else:
         parser.print_help()
 

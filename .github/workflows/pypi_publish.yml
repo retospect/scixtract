@@ -28,7 +28,7 @@ jobs:
       new_version: ${{ steps.bump.outputs.new_version }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         fetch-depth: 0
@@ -62,7 +62,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && needs.version-bump.result == 'success'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         ref: ${{ needs.version-bump.outputs.new_version }}
 
@@ -88,7 +88,7 @@ jobs:
     if: always() && (needs.version-bump.result == 'success' || needs.version-bump.result == 'skipped')
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
       with:
         ref: ${{ needs.version-bump.outputs.new_version || github.ref }}
     - name: Set up Python

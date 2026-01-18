@@ -50,11 +50,8 @@ ollama serve
 For scientific PDFs:
 
 ```bash
-# Default: Good balance for most users (4.7GB)
+# Default model (4.7GB)
 ollama pull qwen3:8b
-
-# Alternative: Larger, more accurate model (19GB)
-ollama pull qwen2.5:32b-instruct-q4_K_M
 ```
 
 ## Installation
@@ -97,9 +94,6 @@ your-project/
 ```bash
 # Extract a single PDF to custom location
 scixtract extract paper.pdf
-
-# Use specific model
-scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
 
 # Specify output directory
 scixtract extract paper.pdf --output-dir results/
@@ -173,17 +167,10 @@ Scixtract provides multiple output formats:
 
 ## Model recommendations
 
-Based on testing with scientific papers:
-
 **Default: qwen3:8b**
 - Good balance of performance and size
-- Reliable JSON output
+- Reliable JSON output for scientific content
 - Size: 4.7GB
-
-**High-performance option: qwen2.5:32b-instruct-q4_K_M**
-- Better accuracy for complex scientific content
-- Larger model with more capabilities
-- Size: 19GB
 
 ## System requirements
 

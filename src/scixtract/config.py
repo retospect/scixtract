@@ -19,7 +19,7 @@ class OllamaConfig:
     """Ollama configuration settings."""
 
     base_url: str = "http://localhost:11434"
-    model: str = "qwen2.5:7b"
+    model: str = "qwen3:8b"
     timeout: int = 120
     temperature: float = 0.1
     top_p: float = 0.9
@@ -118,7 +118,7 @@ class ConfigManager:
 
 [ollama]
 base_url = "http://localhost:11434"
-model = "qwen2.5:7b"
+model = "qwen3:8b"
 timeout = 120
 temperature = 0.1
 top_p = 0.9

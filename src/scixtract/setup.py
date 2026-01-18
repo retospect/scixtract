@@ -19,9 +19,9 @@ class OllamaSetup:
     def __init__(self) -> None:
         self.base_url = "http://localhost:11434"
         self.recommended_models = {
-            "qwen2.5:7b": {
-                "size": "2.0GB",
-                "description": "Latest Llama model, excellent for text processing",
+            "qwen3:8b": {
+                "size": "4.7GB",
+                "description": "Qwen3 8B model, excellent for text processing",
                 "strengths": ["Text analysis", "JSON output", "Academic content"],
                 "recommended": True,
             },
@@ -218,17 +218,17 @@ class OllamaSetup:
 
             if free_space < 5:
                 print("⚠ Low disk space detected - recommending smaller model")
-                return "qwen2.5:7b"
+                return "qwen3:8b"
             elif free_space > 25:
                 print("✅ Sufficient disk space for large models")
                 return "qwen2.5:32b-instruct-q4_K_M"
             else:
                 print("✅ Sufficient disk space for medium models")
-                return "qwen2.5:7b"
+                return "qwen3:8b"
 
         except Exception:
             print("   Could not determine disk space")
-            return "qwen2.5:7b"
+            return "qwen3:8b"
 
     def print_model_info(self) -> None:
         """Print information about available models."""

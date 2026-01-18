@@ -184,6 +184,59 @@ def generate_markdown(result: ExtractionResult, pdf_path: Path) -> str:
     return "\n".join(lines)
 
 
+def batch_process_pdfs(args: argparse.Namespace) -> None:
+    """Process all PDFs in pdf/ directory in batch mode."""
+    pdf_dir = Path("pdf")
+    if not pdf_dir.exists():
+        print("📁 Creating pdf/ directory structure...")
+        pdf_dir.mkdir(exist_ok=True)
+        Path("md").mkdir(exist_ok=True)
+        Path("working").mkdir(exist_ok=True)
+        print(
+            "✅ Created: pdf/ (for PDFs), md/ (for output), "
+            "working/ (for intermediates)"
+        )
+        print(
+            "\n💡 Place PDF files in pdf/ and run 'scixtract extract' " "to process them"
+        )
+        return
+
+    pdf_files = list(pdf_dir.glob("*.pdf"))
+    if not pdf_files:
+        print("⚠️  No PDF files found in pdf/ directory")
+        print(
+            "💡 Place PDF files in pdf/ and run 'scixtract extract' " "to process them"
+        )
+        return
+
+    print(f"🔍 Found {len(pdf_files)} PDF(s) in pdf/ directory")
+    print(f"🤖 Using model: {args.model}")
+    print()
+
+    for pdf_file in pdf_files:
+        # Create a modified args for single file processing
+        single_args = argparse.Namespace(**vars(args))
+        single_args.pdf_file = str(pdf_file)
+        single_args.output_dir = "working"
+
+        try:
+            extract_command(single_args)
+            # Move final markdown to md/ directory
+            base_name = pdf_file.stem
+            working_md = Path("working") / f"{base_name}_ai_processed.md"
+            if working_md.exists():
+                final_md = Path("md") / f"{base_name}.md"
+                import shutil
+
+                shutil.copy2(working_md, final_md)
+                print(f"📝 Final output: {final_md}\n")
+        except Exception as e:
+            print(f"❌ Failed to process {pdf_file.name}: {e}\n")
+            continue
+
+    print("✅ Batch processing complete!")
+
+
 def extract_command(args: argparse.Namespace) -> None:
     """Handle PDF extraction command."""
     # Parse Makefile-style arguments from remaining args
@@ -194,6 +247,11 @@ def extract_command(args: argparse.Namespace) -> None:
     # Load configuration
     config_manager = ConfigManager(getattr(args, "config", None))
     config = config_manager.config
+
+    # Batch processing mode: process all PDFs in pdf/ directory
+    if not args.pdf_file:
+        batch_process_pdfs(args)
+        return
 
     pdf_path = Path(args.pdf_file)
 
@@ -455,11 +513,15 @@ def main() -> None:
 
     # Extract command
     extract_parser = subparsers.add_parser("extract", help="Extract text from PDF")
-    extract_parser.add_argument("pdf_file", help="PDF file to process")
+    extract_parser.add_argument(
+        "pdf_file",
+        nargs="?",
+        help="PDF file to process (if not specified, batch process pdf/ directory)",
+    )
     extract_parser.add_argument(
         "--model",
-        default="qwen2.5:7b",
-        help="Ollama model to use (default: qwen2.5:7b)",
+        default="qwen3:8b",
+        help="Ollama model to use (default: qwen3:8b)",
     )
     extract_parser.add_argument(
         "--output-dir",

@@ -5,20 +5,30 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://github.com/retospect/scixtract/blob/main/LICENSE.txt)
 [![Tests](https://github.com/retospect/scixtract/actions/workflows/test.yml/badge.svg)](https://github.com/retospect/scixtract/actions/workflows/test.yml)
 
-**AI-assisted scientific PDF text extraction**
+AI-powered PDF text extraction for scientific papers. Removes artifacts, preserves formatting like chemical formulas and citations.
 
-Scixtract solves the problem that PDF text extraction is messy and full of artifacts. This tool uses AI assistance to clean up extracted text from scientific PDFs, preserving important formatting like chemical formulas and citations while removing common extraction artifacts.
+## Usage
 
-Designed specifically for academic and scientific literature, scixtract provides clean, structured text output that maintains the integrity of your research content.
+```bash
+# First run creates directory structure
+scixtract extract
 
-## What scixtract does
+# Put PDFs in pdf/ directory
+# Run extraction
+scixtract extract
 
-- **Cleans messy PDF text**: Removes spacing artifacts, broken words, and formatting issues
-- **Preserves scientific content**: Maintains chemical formulas (H₂O, CO₂), equations, and citations
-- **Local AI processing**: Uses local AI models to fix text while preserving meaning
-- **Privacy-focused**: All processing happens on your machine - no data sent to external services
-- **Batch processing**: Handle multiple PDFs
-- **Knowledge indexing**: Build searchable databases of extracted content
+# Clean markdown files appear in md/ directory
+```
+
+**Output:** Markdown files with page numbers preserved and extraction artifacts removed.
+
+**Directory structure:**
+```
+your-project/
+├── pdf/         # Input PDFs
+├── md/          # Output markdown
+└── working/     # Intermediate files
+```
 
 ## Prerequisites
 
@@ -56,40 +66,11 @@ ollama pull qwen3:8b
 
 ## Installation
 
-Install scixtract from PyPI:
-
 ```bash
 pip install scixtract
 ```
 
-## Quick Start
-
-### Automatic batch processing (simplest method)
-
-Scixtract uses a directory-based workflow by default. Just create a `pdf/` directory, add your PDFs, and run:
-
-```bash
-# Process all PDFs in pdf/ directory automatically
-scixtract extract
-```
-
-**What happens:**
-- First run creates `pdf/`, `md/`, and `working/` directories
-- Place PDFs in `pdf/` directory
-- Run `scixtract extract` to process all PDFs
-- Final cleaned markdown appears in `md/` directory
-- Intermediate files stored in `working/` directory
-- Uses `qwen3:8b` model by default (no config needed)
-
-**Directory structure:**
-```
-your-project/
-├── pdf/              # Put your PDF files here
-├── md/               # Polished markdown outputs go here
-└── working/          # Intermediate processing files
-```
-
-### Single file extraction
+## Single file processing
 
 ```bash
 # Extract a single PDF to custom location
@@ -122,55 +103,31 @@ for page in result.pages:
     print(f"Page {page.page_number}: {page.content[:200]}...")
 ```
 
-### Text cleanup utility
+## Text cleanup utility
 
-Fix PDF-extracted text by removing hyphenation artifacts and reflowing paragraphs:
+Removes hyphenation artifacts and reflows paragraphs:
 
 ```bash
-# Fix text from a file
 scixtract text-fix extracted.txt --output cleaned.txt
-
-# Process from stdin/stdout (useful for pipelines)
 cat messy.txt | scixtract text-fix - > clean.txt
-
-# Disable automatic paragraph inference
-scixtract text-fix input.txt --no-infer-paragraphs
 ```
 
-**What it fixes:**
-- Removes line-break hyphens (e.g., "hyphen-\nated" → "hyphenated")
-- Reflows paragraphs to single lines
-- Automatically infers paragraph breaks from sentence endings (enabled by default)
-
-### Knowledge management
-
-Build a searchable database of your extracted content:
+## Knowledge management
 
 ```bash
-# Extract and add to knowledge base (with bibliography for author name recognition)
+# Extract and index
 scixtract extract paper.pdf --bib-file references.bib --update-knowledge
 
-# Search your knowledge base
+# Search
 scixtract knowledge --search "catalysis"
-
-# View statistics
 scixtract knowledge --stats
 ```
 
-## Output formats
+## Output
 
-Scixtract provides multiple output formats:
-
-- **JSON**: Structured data with metadata, page content, and extracted keywords
-- **Markdown**: Clean, readable text with AI-generated summaries
-- **Knowledge database**: SQLite database for searching across multiple documents
-
-## Model recommendations
-
-**Default: qwen3:8b**
-- Good balance of performance and size
-- Reliable JSON output for scientific content
-- Size: 4.7GB
+- **Markdown**: Clean text with page numbers preserved
+- **JSON**: Structured data with metadata and keywords
+- **SQLite database**: Searchable index across documents
 
 ## System requirements
 

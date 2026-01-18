@@ -50,8 +50,8 @@ ollama serve
 For scientific PDFs:
 
 ```bash
-# Default: Good balance for most users (4.4GB)
-ollama pull qwen2.5:7b
+# Default: Good balance for most users (4.7GB)
+ollama pull qwen3:8b
 
 # Alternative: Larger, more accurate model (19GB)
 ollama pull qwen2.5:32b-instruct-q4_K_M
@@ -67,17 +67,42 @@ pip install scixtract
 
 ## Quick Start
 
-### Basic PDF extraction
+### Automatic batch processing (simplest method)
+
+Scixtract uses a directory-based workflow by default. Just create a `pdf/` directory, add your PDFs, and run:
 
 ```bash
-# Extract a single PDF
+# Process all PDFs in pdf/ directory automatically
+scixtract extract
+```
+
+**What happens:**
+- First run creates `pdf/`, `md/`, and `working/` directories
+- Place PDFs in `pdf/` directory
+- Run `scixtract extract` to process all PDFs
+- Final cleaned markdown appears in `md/` directory
+- Intermediate files stored in `working/` directory
+- Uses `qwen3:8b` model by default (no config needed)
+
+**Directory structure:**
+```
+your-project/
+├── pdf/              # Put your PDF files here
+├── md/               # Polished markdown outputs go here
+└── working/          # Intermediate processing files
+```
+
+### Single file extraction
+
+```bash
+# Extract a single PDF to custom location
 scixtract extract paper.pdf
 
 # Use specific model
-scixtract extract paper.pdf --model qwen2.5:7b
+scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
 
-# Process multiple PDFs
-scixtract extract papers/*.pdf
+# Specify output directory
+scixtract extract paper.pdf --output-dir results/
 ```
 
 ### Python API
@@ -88,7 +113,7 @@ from pathlib import Path
 
 # Initialize processor
 processor = AdvancedPDFProcessor(
-    model="qwen2.5:7b"
+    model="qwen3:8b"
 )
 
 # Process PDF
@@ -130,10 +155,10 @@ Scixtract provides multiple output formats:
 
 Based on testing with scientific papers:
 
-**Default: qwen2.5:7b**
+**Default: qwen3:8b**
 - Good balance of performance and size
 - Reliable JSON output
-- Size: 4.4GB
+- Size: 4.7GB
 
 **High-performance option: qwen2.5:32b-instruct-q4_K_M**
 - Better accuracy for complex scientific content
@@ -159,7 +184,7 @@ scixtract-setup-ollama --check-only
 scixtract-setup-ollama --list-models
 
 # Complete setup with default model
-scixtract-setup-ollama --model qwen2.5:7b
+scixtract-setup-ollama --model qwen3:8b
 ```
 
 ## License

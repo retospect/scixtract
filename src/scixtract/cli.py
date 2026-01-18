@@ -480,14 +480,20 @@ def main() -> None:
         description="AI-powered PDF text extraction and knowledge indexing",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""Examples:
-  # Extract PDF with AI processing
+  # Batch process all PDFs in pdf/ directory (default workflow)
+  scixtract extract
+
+  # Extract single PDF with AI processing
+  scixtract extract paper.pdf --model qwen3:8b
+
+  # Use larger model for complex content
   scixtract extract paper.pdf --model qwen2.5:32b-instruct-q4_K_M
 
-  # Extract with bibliography integration (Makefile-friendly)
-  scixtract extract paper.pdf BIB_FILE=references.bib UPDATE_KNOWLEDGE=true
+  # Extract with bibliography integration
+  scixtract extract paper.pdf --bib-file references.bib --update-knowledge
 
-  # Using environment variables (Makefile-friendly)
-  OLLAMA_MODEL=qwen2.5:32b-instruct-q4_K_M scixtract extract paper.pdf
+  # Fix PDF-extracted text (remove hyphenation, reflow paragraphs)
+  scixtract text-fix messy.txt --output clean.txt
 
   # Search knowledge base
   scixtract knowledge --search "catalysis"

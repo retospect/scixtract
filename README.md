@@ -128,6 +128,26 @@ for page in result.pages:
     print(f"Page {page.page_number}: {page.content[:200]}...")
 ```
 
+### Text cleanup utility
+
+Fix PDF-extracted text by removing hyphenation artifacts and reflowing paragraphs:
+
+```bash
+# Fix text from a file
+scixtract text-fix extracted.txt --output cleaned.txt
+
+# Process from stdin/stdout (useful for pipelines)
+cat messy.txt | scixtract text-fix - > clean.txt
+
+# Disable automatic paragraph inference
+scixtract text-fix input.txt --no-infer-paragraphs
+```
+
+**What it fixes:**
+- Removes line-break hyphens (e.g., "hyphen-\nated" → "hyphenated")
+- Reflows paragraphs to single lines
+- Automatically infers paragraph breaks from sentence endings (enabled by default)
+
 ### Knowledge management
 
 Build a searchable database of your extracted content:

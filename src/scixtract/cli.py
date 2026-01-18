@@ -197,7 +197,8 @@ def batch_process_pdfs(args: argparse.Namespace) -> None:
             "working/ (for intermediates)"
         )
         print(
-            "\n💡 Place PDF files in pdf/ and run 'scixtract extract' " "to process them"
+            "\n💡 Place PDF files in pdf/ and run 'scixtract extract' "
+            "to process them"
         )
         return
 

@@ -45,6 +45,14 @@ class OllamaAIProcessor:
         self.available = self._check_availability()
         self.conversation_history: List[Dict[str, str]] = []
 
+    @staticmethod
+    def _remove_control_characters(text: str) -> str:
+        """Remove ASCII control characters except tab, newline, and carriage return."""
+        import re
+
+        # Remove control characters (0-31 and 127) except \t (9), \n (10), \r (13)
+        return re.sub(r"[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]", "", text)
+
     def _check_availability(self) -> bool:
         """Check if Ollama is available and model exists."""
         try:
@@ -91,7 +99,10 @@ class OllamaAIProcessor:
             if response.status_code == 200:
                 result = response.json()
                 response_text = result.get("response", "")
-                return str(response_text).strip() if response_text else ""
+                if response_text:
+                    cleaned = self._remove_control_characters(str(response_text))
+                    return cleaned.strip()
+                return ""
 
             detail = response.text.strip() if getattr(response, "text", None) else ""
             raise RuntimeError(

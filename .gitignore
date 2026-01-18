@@ -156,3 +156,6 @@ extractions/
 test_data/*.pdf
 scixtract.toml
 temp_maintainer.md
+
+# Presentation
+presentation/

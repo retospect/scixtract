@@ -38,10 +38,17 @@ class OllamaAIProcessor:
     """Advanced AI processor using Ollama with sophisticated prompting."""
 
     def __init__(
-        self, model: str = "qwen3:8b", base_url: str = "http://localhost:11434"
+        self,
+        model: str = "qwen3:8b",
+        base_url: str = "http://localhost:11434",
+        timeout: int = 300,
+        max_retries: int = 2,
     ):
         self.model = model
         self.base_url = base_url
+        self.timeout = timeout
+        self.max_retries = max_retries
+        self.session = requests.Session()  # Reuse connections
         self.available = self._check_availability()
         self.conversation_history: List[Dict[str, str]] = []
 
@@ -56,7 +63,7 @@ class OllamaAIProcessor:
     def _check_availability(self) -> bool:
         """Check if Ollama is available and model exists."""
         try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=5)
+            response = self.session.get(f"{self.base_url}/api/tags", timeout=5)
             if response.status_code == 200:
                 models = response.json().get("models", [])
                 available_models = [m["name"] for m in models]
@@ -75,45 +82,86 @@ class OllamaAIProcessor:
     def _call_ollama(
         self, prompt: str, system_prompt: str = "", temperature: float = 0.1
     ) -> str:
-        """Call Ollama API with error handling."""
+        """Call Ollama API with error handling and retry logic."""
         if not self.available:
             raise RuntimeError("Ollama not available")
 
-        try:
-            payload = {
-                "model": self.model,
-                "prompt": prompt,
-                "system": system_prompt,
-                "stream": False,
-                "options": {
-                    "temperature": temperature,
-                    "top_p": 0.9,
-                    "num_ctx": 8192,
-                },
-            }
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "system": system_prompt,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "top_p": 0.9,
+                "num_ctx": 8192,
+            },
+        }
 
-            response = requests.post(
-                f"{self.base_url}/api/generate", json=payload, timeout=120
-            )
+        last_exception: Optional[Exception] = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                response = self.session.post(
+                    f"{self.base_url}/api/generate",
+                    json=payload,
+                    timeout=self.timeout,
+                )
 
-            if response.status_code == 200:
-                result = response.json()
-                response_text = result.get("response", "")
-                if response_text:
-                    cleaned = self._remove_control_characters(str(response_text))
-                    return cleaned.strip()
-                return ""
+                if response.status_code == 200:
+                    result = response.json()
+                    response_text = result.get("response", "")
+                    if response_text:
+                        cleaned = self._remove_control_characters(str(response_text))
+                        return cleaned.strip()
+                    return ""
 
-            detail = response.text.strip() if getattr(response, "text", None) else ""
+                detail = (
+                    response.text.strip() if getattr(response, "text", None) else ""
+                )
+                raise RuntimeError(
+                    "Ollama request failed "
+                    f"(status={response.status_code}, model={self.model}): {detail}"
+                )
+
+            except requests.exceptions.Timeout as e:
+                last_exception = e
+                if attempt < self.max_retries:
+                    wait_time = 2**attempt  # Exponential backoff: 1s, 2s, 4s
+                    attempts_msg = f"(attempt {attempt + 1}/{self.max_retries + 1})"
+                    print(
+                        f"⏱️  Request timeout {attempts_msg}, "
+                        f"retrying in {wait_time}s..."
+                    )
+                    time.sleep(wait_time)
+                    continue
+                # Last attempt failed
+                raise RuntimeError(
+                    f"Ollama request timed out after {self.max_retries + 1} attempts "
+                    f"(timeout={self.timeout}s, model={self.model}): {e}"
+                ) from e
+
+            except requests.exceptions.RequestException as e:
+                last_exception = e
+                if attempt < self.max_retries:
+                    wait_time = 2**attempt
+                    attempts_msg = f"(attempt {attempt + 1}/{self.max_retries + 1})"
+                    print(
+                        f"⚠️  Request failed {attempts_msg}, "
+                        f"retrying in {wait_time}s..."
+                    )
+                    time.sleep(wait_time)
+                    continue
+                # Last attempt failed
+                raise RuntimeError(
+                    f"Ollama request failed (model={self.model}): {e}"
+                ) from e
+
+        # Should not reach here, but just in case
+        if last_exception:
             raise RuntimeError(
-                "Ollama request failed "
-                f"(status={response.status_code}, model={self.model}): {detail}"
-            )
-
-        except requests.exceptions.RequestException as e:
-            raise RuntimeError(
-                f"Ollama request failed (model={self.model}): {e}"
-            ) from e
+                f"Ollama request failed (model={self.model}): {last_exception}"
+            ) from last_exception
+        return ""
 
     def extract_keywords_and_concepts(self, text: str) -> Dict[str, List[str]]:
         """First pass: Extract keywords and key concepts."""

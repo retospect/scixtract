@@ -20,7 +20,7 @@ class TestOllamaAIProcessor:
         """Set up test fixtures."""
         self.processor = OllamaAIProcessor("test-model")
 
-    @patch("scixtract.extractor.requests.get")
+    @patch("scixtract.extractor.requests.Session.get")
     def test_check_availability_success(self, mock_get):
         """Test successful availability check."""
         mock_response = Mock()
@@ -31,7 +31,7 @@ class TestOllamaAIProcessor:
         processor = OllamaAIProcessor("test-model")
         assert processor.available is True
 
-    @patch("scixtract.extractor.requests.get")
+    @patch("scixtract.extractor.requests.Session.get")
     def test_check_availability_failure(self, mock_get):
         """Test failed availability check."""
         mock_get.side_effect = Exception("Connection error")
@@ -39,7 +39,7 @@ class TestOllamaAIProcessor:
         processor = OllamaAIProcessor("test-model")
         assert processor.available is False
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_call_ollama_success(self, mock_post):
         """Test successful Ollama API call."""
         mock_response = Mock()
@@ -72,7 +72,7 @@ class TestOllamaAIProcessor:
         with pytest.raises(RuntimeError, match=r"Ollama request failed"):
             self.processor._call_ollama("test prompt")
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_call_ollama_request_exception_raises(self, mock_post):
         """Test Ollama API call raises on request exceptions."""
         mock_post.side_effect = requests.exceptions.ConnectionError("no route")
@@ -81,7 +81,7 @@ class TestOllamaAIProcessor:
         with pytest.raises(RuntimeError, match=r"Ollama request failed"):
             self.processor._call_ollama("test prompt")
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_extract_keywords_and_concepts(self, mock_post):
         """Test keyword extraction."""
         mock_response = Mock()
@@ -106,7 +106,7 @@ class TestOllamaAIProcessor:
         assert "catalysis" in result["technical_keywords"]
         assert "ammonia" in result["technical_keywords"]
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_extract_keywords_invalid_json(self, mock_post):
         """Test keyword extraction with invalid JSON response."""
         mock_response = Mock()
@@ -121,7 +121,7 @@ class TestOllamaAIProcessor:
         assert result["technical_keywords"] == []
         assert result["research_concepts"] == []
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_classify_content_type(self, mock_post):
         """Test content type classification."""
         mock_response = Mock()
@@ -134,7 +134,7 @@ class TestOllamaAIProcessor:
 
         assert result == "abstract"
 
-    @patch("scixtract.extractor.requests.post")
+    @patch("scixtract.extractor.requests.Session.post")
     def test_fix_text_spacing(self, mock_post):
         """Test text spacing fix."""
         mock_response = Mock()

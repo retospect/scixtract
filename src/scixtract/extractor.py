@@ -41,7 +41,7 @@ class OllamaAIProcessor:
         self,
         model: str = "qwen3:8b",
         base_url: str = "http://localhost:11434",
-        timeout: int = 300,
+        timeout: int = 360,
         max_retries: int = 2,
     ):
         self.model = model
@@ -98,7 +98,6 @@ class OllamaAIProcessor:
             },
         }
 
-        last_exception: Optional[Exception] = None
         for attempt in range(self.max_retries + 1):
             try:
                 response = self.session.post(
@@ -124,43 +123,36 @@ class OllamaAIProcessor:
                 )
 
             except requests.exceptions.Timeout as e:
-                last_exception = e
                 if attempt < self.max_retries:
                     wait_time = 2**attempt  # Exponential backoff: 1s, 2s, 4s
-                    attempts_msg = f"(attempt {attempt + 1}/{self.max_retries + 1})"
+                    n_attempt = attempt + 1
+                    n_total = self.max_retries + 1
                     print(
-                        f"⏱️  Request timeout {attempts_msg}, "
-                        f"retrying in {wait_time}s..."
+                        f"⏱️  Timeout (try {n_attempt}/{n_total}), "
+                        f"retry in {wait_time}s..."
                     )
                     time.sleep(wait_time)
                     continue
-                # Last attempt failed
                 raise RuntimeError(
-                    f"Ollama request timed out after {self.max_retries + 1} attempts "
+                    f"Ollama timed out after {self.max_retries + 1} attempts "
                     f"(timeout={self.timeout}s, model={self.model}): {e}"
                 ) from e
 
             except requests.exceptions.RequestException as e:
-                last_exception = e
                 if attempt < self.max_retries:
                     wait_time = 2**attempt
-                    attempts_msg = f"(attempt {attempt + 1}/{self.max_retries + 1})"
+                    n_attempt = attempt + 1
+                    n_total = self.max_retries + 1
                     print(
-                        f"⚠️  Request failed {attempts_msg}, "
-                        f"retrying in {wait_time}s..."
+                        f"⚠️  Failed (try {n_attempt}/{n_total}), "
+                        f"retry in {wait_time}s..."
                     )
                     time.sleep(wait_time)
                     continue
-                # Last attempt failed
                 raise RuntimeError(
                     f"Ollama request failed (model={self.model}): {e}"
                 ) from e
 
-        # Should not reach here, but just in case
-        if last_exception:
-            raise RuntimeError(
-                f"Ollama request failed (model={self.model}): {last_exception}"
-            ) from last_exception
         return ""
 
     def extract_keywords_and_concepts(self, text: str) -> Dict[str, List[str]]:

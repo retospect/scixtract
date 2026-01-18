@@ -24,7 +24,7 @@ scixtract extract
 
 **Directory structure:**
 ```
-your-project/
+your-project/sources/
 ├── pdf/         # Input PDFs
 ├── md/          # Output markdown
 └── working/     # Intermediate files

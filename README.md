@@ -30,6 +30,26 @@ your-project/
 └── working/     # Intermediate files
 ```
 
+## What it does
+
+For each PDF, scixtract:
+
+1. **Extracts text** from PDF using `unstructured` library
+2. **Processes each page** with AI (qwen3:8b via Ollama):
+   - Removes spacing artifacts and broken words
+   - Fixes line breaks and hyphenation
+   - Preserves chemical formulas (H₂O, CO₂)
+   - Preserves citations and references
+   - Maintains paragraph structure
+3. **Extracts metadata**: Title, authors, keywords
+4. **Generates summary** of the document
+5. **Outputs**:
+   - `md/filename.md` - Clean markdown with page markers
+   - `working/filename_ai_extraction.json` - Structured data
+   - `working/filename_ai_processed.md` - Full processed text
+
+Page numbers are preserved as `[Page X]` markers in the markdown.
+
 ## Prerequisites
 
 Before using scixtract, you need to install and set up Ollama:

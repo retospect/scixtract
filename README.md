@@ -1,4 +1,16 @@
-# scixtract
+# ⚠️ scixtract — DEPRECATED
+
+**This package is deprecated. Use [`acatome-extract`](https://pypi.org/project/acatome-extract/) instead.**
+
+`acatome-extract` provides GPU-accelerated PDF extraction with Marker, CrossRef metadata verification, block chunking, and embedding enrichment.
+
+```bash
+pip install acatome-extract
+```
+
+---
+
+# scixtract (archived)
 
 [![Python](https://img.shields.io/pypi/pyversions/scixtract.svg)](https://pypi.org/project/scixtract/)
 [![PyPI version](https://img.shields.io/pypi/v/scixtract.svg)](https://pypi.org/project/scixtract/)

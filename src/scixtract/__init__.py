@@ -1,26 +1,11 @@
-"""
-AI-Powered PDF Text Extraction and Knowledge Indexing
+"""scixtract — DEPRECATED. Use acatome-extract instead."""
 
-A comprehensive library for extracting text from academic PDFs using AI,
-with advanced knowledge tracking and search capabilities.
+import warnings
 
-Author: Reto Stamm
-Email: reto.stamm@ul.ie
-"""
+__version__ = "2.0.0"
 
-__version__ = "1.1.1"
-__author__ = "Reto Stamm"
-__email__ = "reto.stamm@ul.ie"
-
-from .extractor import AdvancedPDFProcessor, OllamaAIProcessor
-from .knowledge import KnowledgeTracker
-from .models import DocumentMetadata, ExtractionResult, PageContent
-
-__all__ = [
-    "AdvancedPDFProcessor",
-    "OllamaAIProcessor",
-    "KnowledgeTracker",
-    "DocumentMetadata",
-    "PageContent",
-    "ExtractionResult",
-]
+warnings.warn(
+    "scixtract is deprecated. Use acatome-extract instead: pip install acatome-extract",
+    DeprecationWarning,
+    stacklevel=2,
+)
